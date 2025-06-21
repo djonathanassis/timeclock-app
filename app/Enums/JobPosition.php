@@ -4,10 +4,12 @@ declare(strict_types = 1);
 
 namespace App\Enums;
 
-enum UserRole: string
+enum JobPosition: string
 {
-    case ADMIN    = 'admin';
-    case EMPLOYEE = 'employee';
+    case DEVELOPER = 'developer';
+    case MANAGER   = 'manager';
+    case ANALYST   = 'analyst';
+    case OTHER     = 'other';
 
     /**
      * @return array<int, string>

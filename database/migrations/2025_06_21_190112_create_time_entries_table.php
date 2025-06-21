@@ -15,6 +15,9 @@ return new class () extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->timestamp('recorded_at');
 
+            $table->index('recorded_at');
+            $table->index(['user_id', 'recorded_at']);
+
             $table->timestamps();
             $table->softDeletes();
         });

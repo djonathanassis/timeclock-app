@@ -22,7 +22,7 @@ return new class () extends Migration
             $table->string('neighborhood');
             $table->string('city');
             $table->string('state', 2);
-            $table->enum('role', [UserRole::ADMIN->value, UserRole::EMPLOYEE->value])->default(UserRole::EMPLOYEE->value);
+            $table->enum('role', UserRole::values())->default(UserRole::EMPLOYEE->value);
             $table->foreignId('manager_id')->nullable()->constrained('users')->onDelete('set null');
 
             $table->softDeletes();
