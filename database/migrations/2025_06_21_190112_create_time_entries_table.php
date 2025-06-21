@@ -8,12 +8,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class () extends Migration
 {
-    /**
-     * @return void
-     */
     public function up(): void
     {
-        Schema::create('time_entries', static function (Blueprint $table) {
+        Schema::create('time_entries', static function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->timestamp('recorded_at');
@@ -23,9 +20,6 @@ return new class () extends Migration
         });
     }
 
-    /**
-     * @return void
-     */
     public function down(): void
     {
         Schema::dropIfExists('time_entries');

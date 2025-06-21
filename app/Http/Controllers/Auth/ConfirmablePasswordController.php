@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -21,11 +23,20 @@ class ConfirmablePasswordController extends Controller
 
     /**
      * Confirm the user's password.
+     * @throws ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
+        $user = $request->user();
+        
+        if ($user === null) {
+            throw ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
+        }
+
         if (! Auth::guard('web')->validate([
-            'email' => $request->user()->email,
+            'email'    => $user->email,
             'password' => $request->password,
         ])) {
             throw ValidationException::withMessages([

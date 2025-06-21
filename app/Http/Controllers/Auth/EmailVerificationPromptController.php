@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -12,9 +14,16 @@ class EmailVerificationPromptController extends Controller
     /**
      * Display the email verification prompt.
      */
-    public function __invoke(Request $request): RedirectResponse|View
+    public function __invoke(Request $request): RedirectResponse | View
     {
-        return $request->user()->hasVerifiedEmail()
+        $user = $request->user();
+        
+        if ($user === null) {
+            return redirect()->route('login')
+                ->with('error', 'Você precisa estar autenticado para verificar seu e-mail.');
+        }
+
+        return $user->hasVerifiedEmail()
                     ? redirect()->intended(route('dashboard', absolute: false))
                     : view('auth.verify-email');
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
@@ -26,13 +28,19 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        
+        if ($user === null) {
+            return Redirect::route('login')->with('error', 'Usuário não encontrado.');
+        }
+        
+        $user->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -47,6 +55,10 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+        
+        if ($user === null) {
+            return Redirect::route('login')->with('error', 'Usuário não encontrado.');
+        }
 
         Auth::logout();
 
