@@ -45,10 +45,11 @@ class NewPasswordController extends Controller
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user) use ($request): void {
                 $password = $request->input('password');
-                if (!is_string($password)) {
+
+                if (! is_string($password)) {
                     $password = '';
                 }
-                
+
                 $user->forceFill([
                     'password'       => Hash::make($password),
                     'remember_token' => Str::random(60),
@@ -62,7 +63,7 @@ class NewPasswordController extends Controller
         // the application's home authenticated view. If there is an error we can
         // redirect them back to where they came from with their error message.
         $statusString = is_string($status) ? $status : '';
-        
+
         return $status == Password::PASSWORD_RESET
                     ? redirect()->route('login')->with('status', __($statusString))
                     : back()->withInput($request->only('email'))

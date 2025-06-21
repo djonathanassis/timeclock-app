@@ -38,7 +38,8 @@ class RegisteredUserController extends Controller
         ]);
 
         $password = $request->input('password');
-        if (!is_string($password)) {
+
+        if (! is_string($password)) {
             $password = '';
         }
 

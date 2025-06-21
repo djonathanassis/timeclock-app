@@ -17,12 +17,12 @@ class VerifyEmailController extends Controller
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
         $user = $request->user();
-        
+
         if ($user === null) {
             return redirect()->route('login')
                 ->with('error', 'Você precisa estar autenticado para verificar seu e-mail.');
         }
-        
+
         if ($user->hasVerifiedEmail()) {
             return redirect()->intended(route('dashboard', absolute: false) . '?verified=1');
         }

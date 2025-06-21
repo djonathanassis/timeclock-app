@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class EmailVerificationNotificationController extends Controller
 {
@@ -17,7 +16,7 @@ class EmailVerificationNotificationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $user = $request->user();
-        
+
         if ($user === null) {
             return redirect()->route('login')
                 ->with('error', 'Você precisa estar autenticado para verificar seu e-mail.');

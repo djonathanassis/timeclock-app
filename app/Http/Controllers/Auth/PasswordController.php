@@ -15,7 +15,7 @@ class PasswordController extends Controller
 {
     /**
      * Update the user's password.
-     * 
+     *
      * @throws ValidationException
      */
     public function update(Request $request): RedirectResponse
@@ -26,16 +26,17 @@ class PasswordController extends Controller
         ]);
 
         $user = $request->user();
-        
+
         if ($user === null) {
             return back()->with('error', 'Usuário não encontrado.');
         }
-        
+
         $password = '';
+
         if (is_array($validated) && isset($validated['password']) && is_string($validated['password'])) {
             $password = $validated['password'];
         }
-        
+
         $user->update([
             'password' => Hash::make($password),
         ]);

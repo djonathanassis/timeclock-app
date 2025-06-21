@@ -28,7 +28,7 @@ class ConfirmablePasswordController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $user = $request->user();
-        
+
         if ($user === null) {
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),

@@ -29,11 +29,11 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
-        
+
         if ($user === null) {
             return Redirect::route('login')->with('error', 'Usuário não encontrado.');
         }
-        
+
         $user->fill($request->validated());
 
         if ($user->isDirty('email')) {
@@ -55,7 +55,7 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
-        
+
         if ($user === null) {
             return Redirect::route('login')->with('error', 'Usuário não encontrado.');
         }
