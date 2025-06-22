@@ -15,6 +15,22 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    
+                    @can('viewAny', App\Models\User::class)
+                    <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                        {{ __('Funcionários') }}
+                    </x-nav-link>
+                    @endcan
+                    
+                    <x-nav-link :href="route('time-entries.index')" :active="request()->routeIs('time-entries.index')">
+                        {{ __('Meus Registros') }}
+                    </x-nav-link>
+                    
+                    @can('report', App\Models\TimeEntry::class)
+                    <x-nav-link :href="route('time-entries.report')" :active="request()->routeIs('time-entries.report')">
+                        {{ __('Relatório de Ponto') }}
+                    </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -35,7 +51,7 @@
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                            {{ __('Perfil') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -45,7 +61,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('Sair') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -70,6 +86,22 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            
+            @can('viewAny', App\Models\User::class)
+            <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                {{ __('Funcionários') }}
+            </x-responsive-nav-link>
+            @endcan
+            
+            <x-responsive-nav-link :href="route('time-entries.index')" :active="request()->routeIs('time-entries.index')">
+                {{ __('Meus Registros') }}
+            </x-responsive-nav-link>
+            
+            @can('report', App\Models\TimeEntry::class)
+            <x-responsive-nav-link :href="route('time-entries.report')" :active="request()->routeIs('time-entries.report')">
+                {{ __('Relatório de Ponto') }}
+            </x-responsive-nav-link>
+            @endcan
         </div>
 
         <!-- Responsive Settings Options -->
@@ -81,7 +113,7 @@
 
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
+                    {{ __('Perfil') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
@@ -91,7 +123,7 @@
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                        {{ __('Sair') }}
                     </x-responsive-nav-link>
                 </form>
             </div>
