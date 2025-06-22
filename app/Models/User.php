@@ -4,10 +4,10 @@ declare(strict_types = 1);
 
 namespace App\Models;
 
+use App\Enums\JobPosition;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use DateTime;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +16,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 /**
+ * @property int $id
  * @property string $name
  * @property string $cpf
  * @property string $email
@@ -29,7 +30,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string $neighborhood
  * @property string $city
  * @property string $state
- * @property string $role
+ * @property UserRole $role
  * @property int|null $manager_id
  * @property User|null $manager
  * @property Collection<int, User> $employees
@@ -37,7 +38,7 @@ use Illuminate\Notifications\Notifiable;
  *
  * @method static UserFactory factory(...$parameters)
  */
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
     /** @phpstan-use HasFactory<UserFactory> */
     use HasFactory;
@@ -82,6 +83,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'password'          => 'hashed',
             'birth_date'        => 'date',
             'role'              => UserRole::class,
+            'job_position'      => JobPosition::class,
         ];
     }
 
@@ -110,15 +112,5 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         /** @var HasMany<TimeEntry, User> */
         return $this->hasMany(TimeEntry::class);
-    }
-
-    public function isAdmin(): bool
-    {
-        return $this->role === UserRole::ADMIN->value;
-    }
-
-    public function isEmployee(): bool
-    {
-        return $this->role === UserRole::EMPLOYEE->value;
     }
 }
