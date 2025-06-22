@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -14,16 +15,26 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('admin');
+        $user = $this->user();
+        
+        if ($user === null) {
+            return false;
+        }
+        
+        return $user->can('admin');
     }
 
     /**
      * Obtenha as regras de validação que se aplicam à solicitação.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
+        /** @var User|null $routeUser */
+        $routeUser = $this->route('user');
+        $userId = $routeUser?->id;
+        
         return [
             'name' => ['required', 'string', 'max:255'],
             'cpf'  => [
@@ -31,14 +42,14 @@ class UpdateUserRequest extends FormRequest
                 'string',
                 'size:11',
                 'regex:/^\d{11}$/',
-                Rule::unique('users')->ignore($this->route('user')->id),
+                Rule::unique('users')->ignore($userId),
             ],
             'email' => [
                 'required',
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('users')->ignore($this->route('user')->id),
+                Rule::unique('users')->ignore($userId),
             ],
             'password'     => ['nullable', 'string', 'min:8', 'confirmed'],
             'job_position' => ['required', 'string', 'max:255'],

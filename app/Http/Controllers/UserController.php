@@ -22,12 +22,12 @@ class UserController extends Controller
     public function index(Request $request): View
     {
         $this->authorize('viewAny', User::class);
-        
+
         $employees = User::query()
             ->where('role', UserRole::EMPLOYEE->value)
             ->orderBy('name')
             ->paginate(10);
-            
+
         return view('users.index', [
             'employees' => $employees,
         ]);
@@ -39,16 +39,16 @@ class UserController extends Controller
     public function create(): View
     {
         $this->authorize('create', User::class);
-        
+
         return view('users.create');
     }
 
     public function store(StoreUserRequest $request): RedirectResponse
     {
         $validated = $request->validated();
-        
+
         $admin = $request->user();
-        
+
         if ($admin === null) {
             abort(403);
         }
@@ -81,7 +81,7 @@ class UserController extends Controller
     public function show(User $user): View
     {
         $this->authorize('view', $user);
-        
+
         return view('users.show', [
             'employee' => $user,
         ]);
@@ -93,7 +93,7 @@ class UserController extends Controller
     public function edit(User $user): View
     {
         $this->authorize('update', $user);
-        
+
         return view('users.edit', [
             'employee' => $user,
         ]);
@@ -107,7 +107,7 @@ class UserController extends Controller
         $this->authorize('update', $user);
 
         $validated = $request->validated();
-        
+
         $updateData = [
             'name'         => $validated['name'],
             'cpf'          => $validated['cpf'],

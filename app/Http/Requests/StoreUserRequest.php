@@ -6,7 +6,6 @@ namespace App\Http\Requests;
 
 use App\Enums\JobPosition;
 use App\Enums\UserRole;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -14,11 +13,17 @@ class StoreUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('admin');
+        $user = $this->user();
+        
+        if ($user === null) {
+            return false;
+        }
+        
+        return $user->can('admin');
     }
 
     /**
-     * @return array<string, ValidationRule|array|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {

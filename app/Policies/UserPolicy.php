@@ -9,46 +9,28 @@ use App\Models\User;
 
 class UserPolicy
 {
-    /**
-     * @param User $user
-     * @return bool
-     */
     public function viewAny(User $user): bool
     {
-        return $user->role === UserRole::ADMIN;
+        return $user->role->value === UserRole::ADMIN->value;
     }
 
-    /**
-     * @param User $user
-     * @param User $employee
-     * @return bool
-     */
     public function view(User $user, User $employee): bool
     {
-        if ($user->role === UserRole::ADMIN) {
+        if ($user->role->value === UserRole::ADMIN->value) {
             return true;
         }
 
         return $user->id === $employee->id;
     }
 
-    /**
-     * @param User $user
-     * @return bool
-     */
     public function create(User $user): bool
     {
-        return $user->role === UserRole::ADMIN->value;
+        return $user->role->value === UserRole::ADMIN->value;
     }
 
-    /**
-     * @param User $user
-     * @param User $employee
-     * @return bool
-     */
     public function update(User $user, User $employee): bool
     {
-        if ($user->role === UserRole::ADMIN) {
+        if ($user->role->value === UserRole::ADMIN->value) {
             return true;
         }
 
@@ -59,31 +41,21 @@ class UserPolicy
         return $user->id === $employee->id;
     }
 
-    /**
-     * @param User $user
-     * @param User $employee
-     * @return bool
-     */
     public function delete(User $user, User $employee): bool
     {
-        if ($user->role !== UserRole::ADMIN) {
+        if ($user->role->value !== UserRole::ADMIN->value) {
             return false;
         }
 
-        return $employee->role === UserRole::EMPLOYEE;
+        return $employee->role->value === UserRole::EMPLOYEE->value;
     }
 
-    /**
-     * @param User $user
-     * @param User $employee
-     * @return bool
-     */
     public function viewTimeEntries(User $user, User $employee): bool
     {
-        if ($user->role === UserRole::ADMIN) {
+        if ($user->role->value === UserRole::ADMIN->value) {
             return true;
         }
 
         return $user->id === $employee->id;
     }
-} 
+}
