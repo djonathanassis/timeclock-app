@@ -23,8 +23,7 @@ class TimeEntryRepository implements TimeEntryRepositoryInterface
                 te.id,
                 u.name AS employee_name,
                 u.job_position,
-                (strftime('%Y', 'now') - strftime('%Y', u.birth_date)) - 
-                (strftime('%m-%d', 'now') < strftime('%m-%d', u.birth_date)) AS age,
+                TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE()) AS age,
                 m.name AS manager_name,
                 te.recorded_at
             FROM time_entries te
