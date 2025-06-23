@@ -21,10 +21,8 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/time-entries', [TimeEntryController::class, 'index'])->name('time-entries.index');
     Route::post('/time-entries', [TimeEntryController::class, 'store'])->name('time-entries.store');
 
-    Route::middleware('role:admin')->group(function (): void {
-        Route::resource('users', UserController::class);
-        Route::get('/reports/time-entries', TimeEntryReportController::class)->name('time-entries.report');
-    });
+    Route::resource('users', UserController::class);
+    Route::get('/reports/time-entries', TimeEntryReportController::class)->name('time-entries.report');
 });
 
 require __DIR__ . '/auth.php';
