@@ -7,27 +7,27 @@ namespace App\Http\Controllers;
 use App\Enums\UserRole;
 use App\Models\TimeEntry;
 use App\Models\User;
+use App\Repositories\TimeEntry\TimeEntryRepositoryInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
+
+    public function __construct(
+       private readonly TimeEntryRepositoryInterface $repository
+    ) {
+    }
+
     public function index(): View
     {
-        // Obter o último registro de ponto do usuário atual
-        $lastTimeEntry = TimeEntry::query()
-            ->where('user_id', Auth::id())
-            ->latest('recorded_at')
-            ->first();
+        $lastTimeEntry = $this->repository->findLastByUser(Auth::id());
 
-        // Verificar se o último registro foi feito hoje
         $registeredToday = $lastTimeEntry && $lastTimeEntry->recorded_at->format('Y-m-d') === Carbon::today()->format('Y-m-d');
 
-        // Estatísticas para administradores
         $stats = [];
 
-        // Verificar se o usuário está autenticado e se é administrador
         $user = Auth::user();
         if ($user && $user->role === UserRole::ADMIN) {
             $stats = [
@@ -39,6 +39,9 @@ class DashboardController extends Controller
             ];
         }
 
-        return view('dashboard', ['lastTimeEntry' => $lastTimeEntry, 'registeredToday' => $registeredToday, 'stats' => $stats]);
+        return view(
+            'dashboard',
+            ['lastTimeEntry' => $lastTimeEntry, 'registeredToday' => $registeredToday, 'stats' => $stats]
+        );
     }
 }
