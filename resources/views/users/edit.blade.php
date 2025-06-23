@@ -59,12 +59,24 @@
                                     <x-input-label for="job_position" :value="__('Cargo')" />
                                     <select id="job_position" name="job_position" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" required>
                                         <option value="">Selecione um cargo</option>
-                                        <option value="developer" {{ old('job_position', $employee->job_position->value) == 'developer' ? 'selected' : '' }}>Desenvolvedor</option>
-                                        <option value="manager" {{ old('job_position', $employee->job_position->value) == 'manager' ? 'selected' : '' }}>Gerente</option>
-                                        <option value="analyst" {{ old('job_position', $employee->job_position->value) == 'analyst' ? 'selected' : '' }}>Analista</option>
-                                        <option value="other" {{ old('job_position', $employee->job_position->value) == 'other' ? 'selected' : '' }}>Outro</option>
+                                        <option value="developer" {{ old('job_position', $employee->job_position) == 'developer' ? 'selected' : '' }}>Desenvolvedor</option>
+                                        <option value="manager" {{ old('job_position', $employee->job_position) == 'manager' ? 'selected' : '' }}>Gerente</option>
+                                        <option value="analyst" {{ old('job_position', $employee->job_position) == 'analyst' ? 'selected' : '' }}>Analista</option>
+                                        <option value="other" {{ old('job_position', $employee->job_position) == 'other' ? 'selected' : '' }}>Outro</option>
                                     </select>
                                     <x-input-error :messages="$errors->get('job_position')" class="mt-2" />
+                                </div>
+
+                                <!-- Função -->
+                                <div>
+                                    <x-input-label for="role" :value="__('Função no Sistema')" />
+                                    <select id="role" name="role" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" required>
+                                        <option value="">Selecione uma função</option>
+                                        <option value="employee" {{ old('role', $employee->role?->value) == 'employee' ? 'selected' : '' }}>Funcionário</option>
+                                        <option value="manager" {{ old('role', $employee->role?->value) == 'manager' ? 'selected' : '' }}>Gestor</option>
+                                        <option value="admin" {{ old('role', $employee->role?->value) == 'admin' ? 'selected' : '' }}>Administrador</option>
+                                    </select>
+                                    <x-input-error :messages="$errors->get('role')" class="mt-2" />
                                 </div>
 
                                 <!-- Data de Nascimento -->

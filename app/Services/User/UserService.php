@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Services\User\DTOs\UserDTO;
 use App\Services\User\Interfaces\UserServiceInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 readonly class UserService implements UserServiceInterface
@@ -59,5 +60,22 @@ readonly class UserService implements UserServiceInterface
     public function getUsersByManager(int $managerId, int $perPage = 10): LengthAwarePaginator
     {
         return $this->userRepository->getByManager($managerId, $perPage);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getAllUsers(): Collection
+    {
+        return $this->userRepository->getAll();
+    }
+
+    /**
+     * @param int $userId
+     * @return User|null
+     */
+    public function getUserById(int $userId): ?User
+    {
+        return $this->userRepository->findById($userId);
     }
 }

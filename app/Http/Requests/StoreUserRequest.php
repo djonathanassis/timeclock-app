@@ -4,12 +4,10 @@ declare(strict_types = 1);
 
 namespace App\Http\Requests;
 
-use App\Enums\JobPosition;
 use App\Enums\UserRole;
 use App\Rules\ValidCpf;
 use App\Rules\ValidZipCode;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Enum;
 
 class StoreUserRequest extends FormRequest
@@ -24,7 +22,7 @@ class StoreUserRequest extends FormRequest
             'cpf'          => ['required', 'string', 'unique:users', new ValidCpf()],
             'email'        => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password'     => ['required', 'string', 'min:8', 'confirmed'],
-            'job_position' => ['required', new Enum(JobPosition::class)],
+            'job_position' => ['required', 'string','max:255'],
             'role'         => ['required', new Enum(UserRole::class)],
             'birth_date'   => ['required', 'date', 'before:today'],
             'zip_code'     => ['required', 'string', new ValidZipCode()],
@@ -42,7 +40,6 @@ class StoreUserRequest extends FormRequest
     {
         $this->merge([
             'manager_id' => $this->user()?->id,
-            'password'   => Hash::make((string) $this->input('password')),
             'cpf'        => preg_replace('/\D/', '', (string) $this->input('cpf')),
             'zip_code'   => preg_replace('/\D/', '', (string) $this->input('zip_code')),
         ]);

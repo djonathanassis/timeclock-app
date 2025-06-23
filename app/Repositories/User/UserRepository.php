@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Repositories\User;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class UserRepository implements UserRepositoryInterface
@@ -44,4 +45,20 @@ class UserRepository implements UserRepositoryInterface
             ->orderBy('name')
             ->paginate($perPage);
     }
-} 
+
+    /**
+     * @inheritDoc
+     */
+    public function getAll(): Collection
+    {
+        return User::query()->orderBy('name')->get();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findById(int $id): ?User
+    {
+        return User::query()->find($id);
+    }
+}

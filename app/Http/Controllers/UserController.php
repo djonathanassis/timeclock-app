@@ -59,7 +59,7 @@ class UserController extends Controller
         $this->authorize('create', User::class);
         
         try {
-            $userDTO = UserDTO::fromStoreRequest($request);
+            $userDTO =  UserDTO::fromArray($request->validated());
             $this->userService->createUser($userDTO);
 
             return redirect()->route('users.index')
@@ -105,10 +105,15 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
+        $this->authorize('update', $user);
+        
         try {
-            $userDTO = UserDTO::fromUpdateRequest($request);
+            $userDTO = UserDTO::fromArray($request->validated());
             $this->userService->updateUser($user, $userDTO);
 
             return redirect()->route('users.index')

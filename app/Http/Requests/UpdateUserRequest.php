@@ -4,11 +4,13 @@ declare(strict_types = 1);
 
 namespace App\Http\Requests;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use App\Rules\ValidCpf;
 use App\Rules\ValidZipCode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -37,6 +39,7 @@ class UpdateUserRequest extends FormRequest
                 Rule::unique('users')->ignore($userId),
             ],
             'job_position' => ['required', 'string', 'max:255'],
+            'role'         => ['required', new Enum(UserRole::class)],
             'birth_date'   => ['required', 'date', 'before:today'],
             'zip_code'     => ['required', 'string', new ValidZipCode()],
             'street'       => ['required', 'string', 'max:255'],
@@ -45,6 +48,7 @@ class UpdateUserRequest extends FormRequest
             'neighborhood' => ['required', 'string', 'max:255'],
             'city'         => ['required', 'string', 'max:255'],
             'state'        => ['required', 'string', 'size:2'],
+            'manager_id'   => ['nullable', 'exists:users,id'],
         ];
     }
 
@@ -52,8 +56,9 @@ class UpdateUserRequest extends FormRequest
     {
         if ($this->has('cpf') || $this->has('zip_code')) {
             $this->merge([
-                'cpf'      => preg_replace('/\D/', '', (string) $this->input('cpf')),
-                'zip_code' => preg_replace('/\D/', '', (string) $this->input('zip_code')),
+                'manager_id' => $this->user()?->id,
+                'cpf'        => preg_replace('/\D/', '', (string) $this->input('cpf')),
+                'zip_code'   => preg_replace('/\D/', '', (string) $this->input('zip_code')),
             ]);
         }
     }

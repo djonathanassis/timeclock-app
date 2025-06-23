@@ -14,7 +14,7 @@ readonly class UserDTO
         public string $cpf,
         public string $email,
         public ?string $password,
-        public JobPosition $jobPosition,
+        public string$jobPosition,
         public string $birthDate,
         public string $zipCode,
         public string $street,
@@ -35,7 +35,7 @@ readonly class UserDTO
             cpf: $data['cpf'] ?? '',
             email: $data['email'] ?? '',
             password: $data['password'] ?? null,
-            jobPosition: JobPosition::from($data['position']),
+            jobPosition: $data['job_position'],
             birthDate: $data['birth_date'] ?? '',
             zipCode: $data['zip_code'] ?? '',
             street: $data['street'] ?? '',
@@ -51,11 +51,10 @@ readonly class UserDTO
 
     public function toArray(): array
     {
-        return [
+        $data = [
             'name'         => $this->name,
             'cpf'          => $this->cpf,
             'email'        => $this->email,
-            'password'     => Hash::make($this->password),
             'job_position' => $this->jobPosition,
             'birth_date'   => $this->birthDate,
             'zip_code'     => $this->zipCode,
@@ -68,5 +67,11 @@ readonly class UserDTO
             'manager_id'   => $this->managerId,
             'role'         => $this->role,
         ];
+
+        if ($this->password !== null) {
+            $data['password'] = Hash::make($this->password);
+        }
+        
+        return $data;
     }
 }

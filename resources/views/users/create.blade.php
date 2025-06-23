@@ -57,6 +57,18 @@
                                     <x-input-error :messages="$errors->get('job_position')" class="mt-2" />
                                 </div>
 
+                                <!-- Função -->
+                                <div>
+                                    <x-input-label for="role" :value="__('Função no Sistema')" />
+                                    <select id="role" name="role" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" required>
+                                        <option value="">Selecione uma função</option>
+                                        <option value="employee" {{ old('role') == 'employee' ? 'selected' : '' }}>Funcionário</option>
+                                        <option value="manager" {{ old('role') == 'manager' ? 'selected' : '' }}>Gestor</option>
+                                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrador</option>
+                                    </select>
+                                    <x-input-error :messages="$errors->get('role')" class="mt-2" />
+                                </div>
+
                                 <!-- Data de Nascimento -->
                                 <div>
                                     <x-input-label for="birth_date" :value="__('Data de Nascimento')" />

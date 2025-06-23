@@ -35,4 +35,15 @@ interface UserRepositoryInterface
      * @return LengthAwarePaginator
      */
     public function getByManager(int $managerId, int $perPage = 10): LengthAwarePaginator;
-} 
+
+    /**
+     * @return Collection
+     */
+    public function getAll(): Collection;
+
+    /**
+     * @param int $id
+     * @return User|null
+     */
+    public function findById(int $id): ?User;
+}
