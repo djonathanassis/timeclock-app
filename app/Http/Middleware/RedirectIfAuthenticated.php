@@ -12,14 +12,12 @@ use Symfony\Component\HttpFoundation\Response;
 class RedirectIfAuthenticated
 {
     /**
-     * @param Request $request
      * @param Closure(Request): (Response) $next
      * @param  string|null  ...$guards
-     * @return Response
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        $guards = empty($guards) ? [null] : $guards;
+        $guards = $guards === [] ? [null] : $guards;
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
@@ -29,4 +27,4 @@ class RedirectIfAuthenticated
 
         return $next($request);
     }
-} 
+}

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Tests\Rules;
 
 use Closure;
@@ -14,4 +16,4 @@ class TestingValidCpf implements ValidationRule
     {
         // Sempre valida para testes
     }
-} 
+}

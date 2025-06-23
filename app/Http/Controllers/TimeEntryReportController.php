@@ -22,7 +22,7 @@ class TimeEntryReportController extends Controller
         GetTimeRecordReport $report
     ): View {
         $this->authorize('report', TimeEntry::class);
-        
+
         $startDate = $request->getStartDateTime();
         $endDate   = $request->getEndDateTime();
 

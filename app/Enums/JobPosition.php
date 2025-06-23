@@ -7,9 +7,9 @@ namespace App\Enums;
 enum JobPosition: string
 {
     case DEVELOPER = 'developer';
-    case ANALYST = 'analyst';
-    case MANAGER = 'manager';
-    case OTHER = 'other';
+    case ANALYST   = 'analyst';
+    case MANAGER   = 'manager';
+    case OTHER     = 'other';
 
     /**
      * @return array<int, string>
@@ -18,4 +18,4 @@ enum JobPosition: string
     {
         return array_column(self::cases(), 'value');
     }
-} 
+}

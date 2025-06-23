@@ -83,7 +83,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
             'birth_date'        => 'date',
-            'role'              => UserRole::class
+            'role'              => UserRole::class,
         ];
     }
 

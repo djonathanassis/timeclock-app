@@ -19,6 +19,10 @@ use Illuminate\View\View;
 
 class TimeEntryController extends Controller
 {
+    /**
+     * @param TimeEntryServiceInterface $timeEntryService
+     * @param UserServiceInterface $userService
+     */
     public function __construct(
         private readonly TimeEntryServiceInterface $timeEntryService,
         private readonly UserServiceInterface $userService
@@ -26,6 +30,8 @@ class TimeEntryController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return View
      * @throws AuthorizationException
      */
     public function index(Request $request): View
@@ -49,13 +55,10 @@ class TimeEntryController extends Controller
             $users = $this->userService->getAllUsers();
         }
 
-        // Obter o último registro de ponto do usuário atual
         $lastTimeEntry = $this->timeEntryService->getLastTimeEntry((int) Auth::id());
 
-        // Verificar se o último registro foi feito hoje
         $registeredToday = $lastTimeEntry && $lastTimeEntry->recorded_at->format('Y-m-d') === Carbon::today()->format('Y-m-d');
-        
-        // Obter o nome do usuário atual para exibição
+
         $currentUser = $this->userService->getUserById($userId);
         $userName    = $currentUser->name ?? 'Usuário não encontrado';
 
@@ -75,18 +78,19 @@ class TimeEntryController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return RedirectResponse
      * @throws AuthorizationException
      */
     public function store(Request $request): RedirectResponse
     {
         $this->authorize('registerTimeEntry', TimeEntry::class);
-        
+
         try {
             $this->timeEntryService->registerTimeEntry((int) Auth::id());
-            
+
             return redirect()->route('time-entries.index')
                 ->with('status', 'Ponto registrado com sucesso!');
-                
         } catch (Exception $e) {
             return redirect()->route('time-entries.index')
                 ->with('error', $e->getMessage());
@@ -94,10 +98,9 @@ class TimeEntryController extends Controller
     }
 
     /**
-     * Verifica se o usuário atual tem uma determinada permissão.
-     * 
-     * @param string $ability Nome da permissão
-     * @param mixed $arguments Argumentos adicionais
+     * @param string $ability
+     * @param mixed $arguments
+     * @return bool
      */
     private function userCan(string $ability, mixed $arguments = []): bool
     {

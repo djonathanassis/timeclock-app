@@ -14,12 +14,17 @@ use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-
+    /**
+     * @param TimeEntryRepositoryInterface $repository
+     */
     public function __construct(
-       private readonly TimeEntryRepositoryInterface $repository
+        private readonly TimeEntryRepositoryInterface $repository
     ) {
     }
 
+    /**
+     * @return View
+     */
     public function index(): View
     {
         $lastTimeEntry = $this->repository->findLastByUser(Auth::id());
@@ -29,6 +34,7 @@ class DashboardController extends Controller
         $stats = [];
 
         $user = Auth::user();
+
         if ($user && $user->role === UserRole::ADMIN) {
             $stats = [
                 'total_users'         => User::count(),

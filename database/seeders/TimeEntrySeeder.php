@@ -7,8 +7,8 @@ namespace Database\Seeders;
 use App\Enums\UserRole;
 use App\Models\TimeEntry;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 use Random\RandomException;
 
 class TimeEntrySeeder extends Seeder

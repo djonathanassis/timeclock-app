@@ -17,16 +17,17 @@ class UserRepository implements UserRepositoryInterface
     {
         return User::query()->create($data);
     }
-    
+
     /**
      * @inheritDoc
      */
     public function update(User $user, array $data): User
     {
         $user->update($data);
+
         return $user;
     }
-    
+
     /**
      * @inheritDoc
      */

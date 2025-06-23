@@ -12,10 +12,6 @@ use App\Repositories\TimeEntry\TimeEntryRepository;
 use App\Repositories\TimeEntry\TimeEntryRepositoryInterface;
 use App\Repositories\User\UserRepository;
 use App\Repositories\User\UserRepositoryInterface;
-use App\Services\Address\AddressService;
-use App\Services\Address\AddressServiceInterface;
-use App\Services\Address\Providers\AddressProviderInterface;
-use App\Services\Address\Providers\ViaCepProvider;
 use App\Services\TimeEntry\Interfaces\TimeEntryServiceInterface;
 use App\Services\TimeEntry\TimeEntryService;
 use App\Services\User\Interfaces\UserServiceInterface;
@@ -27,27 +23,21 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /**
+     * @return void
+     */
     #[\Override]
     public function register(): void
     {
-        // Repositórios
         $this->app->bind(TimeEntryRepositoryInterface::class, TimeEntryRepository::class);
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
-        
-        // Serviço de endereço e seu provider
-        $this->app->bind(AddressProviderInterface::class, function ($app) {
-            return new ViaCepProvider(
-                offlineMode: config('address.offline_mode', false),
-                acceptValidFormatOnFailure: config('address.accept_valid_format_on_failure', true)
-            );
-        });
-        $this->app->bind(AddressServiceInterface::class, AddressService::class);
-        
-        // Serviços de negócio
         $this->app->bind(TimeEntryServiceInterface::class, TimeEntryService::class);
         $this->app->bind(UserServiceInterface::class, UserService::class);
     }
 
+    /**
+     * @return void
+     */
     public function boot(): void
     {
         Gate::policy(User::class, UserPolicy::class);
@@ -57,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Configure the application's dates.
+     * @return void
      */
     private function configureDates(): void
     {

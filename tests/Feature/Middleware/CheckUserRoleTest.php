@@ -20,7 +20,7 @@ final class CheckUserRoleTest extends TestCase
         ]);
 
         $response = $this->actingAs($admin)->get(route('users.index'));
-        
+
         $response->assertStatus(200);
     }
 
@@ -31,14 +31,14 @@ final class CheckUserRoleTest extends TestCase
         ]);
 
         $response = $this->actingAs($employee)->get(route('users.index'));
-        
+
         $response->assertStatus(403);
     }
 
     public function test_unauthenticated_user_is_redirected_to_login(): void
     {
         $response = $this->get(route('users.index'));
-        
+
         $response->assertRedirect(route('login'));
     }
 
@@ -47,15 +47,15 @@ final class CheckUserRoleTest extends TestCase
         $employee = User::factory()->create([
             'role' => UserRole::EMPLOYEE,
         ]);
-        
+
         $response = $this->actingAs($employee)->get(route('dashboard'));
         $response->assertStatus(200);
-        
+
         $admin = User::factory()->create([
             'role' => UserRole::ADMIN,
         ]);
-        
+
         $response = $this->actingAs($admin)->get(route('dashboard'));
         $response->assertStatus(200);
     }
-} 
+}

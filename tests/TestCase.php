@@ -13,33 +13,33 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Configura o banco de dados para SQLite em memória
         config(['database.default' => 'sqlite']);
         config(['database.connections.sqlite.database' => ':memory:']);
-        
+
         // Configura o ViaCepService para modo offline durante os testes
         config(['address.offline_mode' => true]);
-        
+
         // Mock do ViaCepService para retornar true para qualquer CEP
-        $this->app->instance(ViaCepService::class, new class extends ViaCepService {
+        $this->app->instance(ViaCepService::class, new class () extends ViaCepService
+        {
             public function __construct()
             {
-                parent::__construct(true, true);
+                parent::__construct(true);
             }
-            
+
             public function validateZipCode(string $zipCode): bool
             {
                 return true;
             }
         });
-        
+
         // Registrar a regra de validação de CPF de teste
-        $this->app->singleton(ValidCpf::class, function () {
-            return new TestingValidCpf();
-        });
+        $this->app->singleton(ValidCpf::class, fn (): TestingValidCpf => new TestingValidCpf());
     }
 }

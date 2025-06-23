@@ -23,7 +23,7 @@ final class TimeEntryReportTest extends TestCase
         ]);
 
         $employees = User::factory()->count(3)->create([
-            'role' => UserRole::EMPLOYEE,
+            'role'       => UserRole::EMPLOYEE,
             'manager_id' => $admin->id,
         ]);
 
@@ -49,7 +49,7 @@ final class TimeEntryReportTest extends TestCase
         ]);
 
         $employees = User::factory()->count(3)->create([
-            'role' => UserRole::EMPLOYEE,
+            'role'       => UserRole::EMPLOYEE,
             'manager_id' => $admin->id,
         ]);
 
@@ -61,12 +61,12 @@ final class TimeEntryReportTest extends TestCase
 
         // Teste
         $startDate = now()->subDays(7)->format('Y-m-d');
-        $endDate = now()->format('Y-m-d');
+        $endDate   = now()->format('Y-m-d');
 
         $response = $this->actingAs($admin)
             ->get(route('time-entries.report', [
                 'start_date' => $startDate,
-                'end_date' => $endDate,
+                'end_date'   => $endDate,
             ]));
 
         $response->assertStatus(200);
@@ -81,7 +81,7 @@ final class TimeEntryReportTest extends TestCase
         ]);
 
         $employee = User::factory()->create([
-            'role' => UserRole::EMPLOYEE,
+            'role'       => UserRole::EMPLOYEE,
             'manager_id' => $admin->id,
         ]);
 
@@ -100,7 +100,7 @@ final class TimeEntryReportTest extends TestCase
         ]);
 
         $employees = User::factory()->count(3)->create([
-            'role' => UserRole::EMPLOYEE,
+            'role'       => UserRole::EMPLOYEE,
             'manager_id' => $admin->id,
         ]);
 
@@ -117,4 +117,4 @@ final class TimeEntryReportTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewHas('entries');
     }
-} 
+}

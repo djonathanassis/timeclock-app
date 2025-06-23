@@ -13,6 +13,7 @@ class UserManagementTest extends TestCase
 {
     use RefreshDatabase;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -23,22 +24,25 @@ class UserManagementTest extends TestCase
     private function generateValidCPF(): string
     {
         $cpf = [];
+
         for ($i = 0; $i < 9; $i++) {
             $cpf[$i] = random_int(0, 9);
         }
 
         $soma = 0;
+
         for ($i = 0; $i < 9; $i++) {
             $soma += $cpf[$i] * (10 - $i);
         }
-        $resto = $soma % 11;
+        $resto  = $soma % 11;
         $cpf[9] = ($resto < 2) ? 0 : 11 - $resto;
 
         $soma = 0;
+
         for ($i = 0; $i < 10; $i++) {
             $soma += $cpf[$i] * (11 - $i);
         }
-        $resto = $soma % 11;
+        $resto   = $soma % 11;
         $cpf[10] = ($resto < 2) ? 0 : 11 - $resto;
 
         return implode('', $cpf);
@@ -51,7 +55,7 @@ class UserManagementTest extends TestCase
         ]);
 
         $employee = User::factory()->create([
-            'role' => UserRole::EMPLOYEE,
+            'role'       => UserRole::EMPLOYEE,
             'manager_id' => $admin->id,
         ]);
 
@@ -71,26 +75,26 @@ class UserManagementTest extends TestCase
         $response = $this->actingAs($admin)->get(route('users.create'));
         $response->assertStatus(200);
 
-        $validCpf = $this->generateValidCPF();
+        $validCpf     = $this->generateValidCPF();
         $validZipCode = '01001000';
 
         $userData = [
-            'name' => 'Novo Funcionário',
-            'cpf' => $validCpf,
-            'email' => 'novo@exemplo.com',
-            'password' => 'password',
+            'name'                  => 'Novo Funcionário',
+            'cpf'                   => $validCpf,
+            'email'                 => 'novo@exemplo.com',
+            'password'              => 'password',
             'password_confirmation' => 'password',
-            'job_position' => 'developer',
-            'role' => 'employee',
-            'birth_date' => '1990-01-01',
-            'zip_code' => $validZipCode,
-            'street' => 'Praça da Sé',
-            'number' => '123',
-            'complement' => 'Apto 101',
-            'neighborhood' => 'Sé',
-            'city' => 'São Paulo',
-            'state' => 'SP',
-            'manager_id' => $admin->id,
+            'job_position'          => 'developer',
+            'role'                  => 'employee',
+            'birth_date'            => '1990-01-01',
+            'zip_code'              => $validZipCode,
+            'street'                => 'Praça da Sé',
+            'number'                => '123',
+            'complement'            => 'Apto 101',
+            'neighborhood'          => 'Sé',
+            'city'                  => 'São Paulo',
+            'state'                 => 'SP',
+            'manager_id'            => $admin->id,
         ];
 
         $storeResponse = $this->actingAs($admin)->post(route('users.store'), $userData);
@@ -98,7 +102,7 @@ class UserManagementTest extends TestCase
         $storeResponse->assertSessionHas('status', 'Funcionário cadastrado com sucesso!');
 
         $this->assertDatabaseHas('users', [
-            'name' => 'Novo Funcionário',
+            'name'  => 'Novo Funcionário',
             'email' => 'novo@exemplo.com',
         ]);
     }
@@ -109,49 +113,49 @@ class UserManagementTest extends TestCase
             'role' => UserRole::ADMIN,
         ]);
 
-        $validCpf = $this->generateValidCPF();
+        $validCpf     = $this->generateValidCPF();
         $validZipCode = '01001000';
-        
+
         $employee = User::factory()->create([
-            'role' => UserRole::EMPLOYEE,
-            'manager_id' => $admin->id,
-            'name' => 'Nome Original',
-            'cpf' => $validCpf,
-            'zip_code' => $validZipCode,
-            'street' => 'Praça da Sé',
+            'role'         => UserRole::EMPLOYEE,
+            'manager_id'   => $admin->id,
+            'name'         => 'Nome Original',
+            'cpf'          => $validCpf,
+            'zip_code'     => $validZipCode,
+            'street'       => 'Praça da Sé',
             'neighborhood' => 'Sé',
-            'city' => 'São Paulo',
-            'state' => 'SP',
+            'city'         => 'São Paulo',
+            'state'        => 'SP',
         ]);
 
         $response = $this->actingAs($admin)->get(route('users.edit', $employee));
         $response->assertStatus(200);
 
         $updateData = [
-            'name' => 'Nome Atualizado',
-            'cpf' => $validCpf,
-            'email' => $employee->email,
+            'name'         => 'Nome Atualizado',
+            'cpf'          => $validCpf,
+            'email'        => $employee->email,
             'job_position' => $employee->job_position,
-            'role' => 'employee',
-            'birth_date' => $employee->birth_date->format('Y-m-d'),
-            'zip_code' => $validZipCode,
-            'street' => 'Praça da Sé',
-            'number' => $employee->number ?? '100',
-            'complement' => $employee->complement ?? 'Sala 202',
+            'role'         => 'employee',
+            'birth_date'   => $employee->birth_date->format('Y-m-d'),
+            'zip_code'     => $validZipCode,
+            'street'       => 'Praça da Sé',
+            'number'       => $employee->number ?? '100',
+            'complement'   => $employee->complement ?? 'Sala 202',
             'neighborhood' => 'Sé',
-            'city' => 'São Paulo',
-            'state' => 'SP',
-            'manager_id' => $admin->id,
+            'city'         => 'São Paulo',
+            'state'        => 'SP',
+            'manager_id'   => $admin->id,
         ];
 
         $updateResponse = $this->actingAs($admin)
             ->put(route('users.update', $employee), $updateData);
-        
+
         $updateResponse->assertRedirect(route('users.index'));
         $updateResponse->assertSessionHas('status', 'Funcionário atualizado com sucesso!');
 
         $this->assertDatabaseHas('users', [
-            'id' => $employee->id,
+            'id'   => $employee->id,
             'name' => 'Nome Atualizado',
         ]);
     }
@@ -163,13 +167,13 @@ class UserManagementTest extends TestCase
         ]);
 
         $employee = User::factory()->create([
-            'role' => UserRole::EMPLOYEE,
+            'role'       => UserRole::EMPLOYEE,
             'manager_id' => $admin->id,
         ]);
 
         $response = $this->actingAs($admin)
             ->delete(route('users.destroy', $employee));
-        
+
         $response->assertRedirect(route('users.index'));
         $response->assertSessionHas('status', 'Funcionário excluído com sucesso!');
 
@@ -185,13 +189,13 @@ class UserManagementTest extends TestCase
         ]);
 
         $employee = User::factory()->create([
-            'role' => UserRole::EMPLOYEE,
+            'role'       => UserRole::EMPLOYEE,
             'manager_id' => $admin->id,
         ]);
 
         $response = $this->actingAs($admin)
             ->get(route('users.show', $employee));
-        
+
         $response->assertStatus(200);
         $response->assertViewHas('employee');
         $response->assertSee($employee->name);
@@ -209,4 +213,4 @@ class UserManagementTest extends TestCase
         $this->actingAs($employee)->get(route('users.edit', $employee))->assertStatus(403);
         $this->actingAs($employee)->get(route('users.show', $employee))->assertStatus(403);
     }
-} 
+}

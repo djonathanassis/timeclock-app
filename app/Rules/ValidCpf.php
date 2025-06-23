@@ -12,7 +12,7 @@ class ValidCpf implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $stringValue = is_null($value) ? '' : (string) $value;
-        $cpf = preg_replace('/\D/', '', $stringValue) ?? '';
+        $cpf         = preg_replace('/\D/', '', $stringValue) ?? '';
 
         if ($cpf === '' || $this->validFormat($cpf) || ! $this->validDigits($cpf)) {
             $fail('O :attribute informado não é um CPF válido.');

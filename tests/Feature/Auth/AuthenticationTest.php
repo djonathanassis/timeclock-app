@@ -22,13 +22,13 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
-        $user = User::factory()->create([
-            'email' => 'test@example.com',
+        User::factory()->create([
+            'email'    => 'test@example.com',
             'password' => bcrypt('password'),
         ]);
 
         $response = $this->post('/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password',
         ]);
 
@@ -38,12 +38,12 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
-        $user = User::factory()->create([
+        User::factory()->create([
             'email' => 'test@example.com',
         ]);
 
         $this->post('/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'wrong-password',
         ]);
 

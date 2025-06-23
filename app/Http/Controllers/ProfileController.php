@@ -16,24 +16,21 @@ class ProfileController extends Controller
 {
     /**
      * Display the user's profile form.
-     * 
+     *
      * @throws AuthorizationException
      */
     public function edit(Request $request): View
     {
         $user = $request->user();
-        
-        // Temos certeza que o usuário está autenticado devido ao middleware auth
+
         $this->authorize('updateProfile', $user);
-        
+
         return view('profile.edit', [
             'user' => $user,
         ]);
     }
 
     /**
-     * Update the user's profile information.
-     * 
      * @throws AuthorizationException
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
@@ -43,7 +40,7 @@ class ProfileController extends Controller
         if ($user === null) {
             return Redirect::route('login')->with('error', 'Usuário não encontrado.');
         }
-        
+
         $this->authorize('updateProfile', $user);
 
         $user->fill($request->validated());
@@ -58,8 +55,6 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account.
-     * 
      * @throws AuthorizationException
      */
     public function destroy(Request $request): RedirectResponse
@@ -73,7 +68,7 @@ class ProfileController extends Controller
         if ($user === null) {
             return Redirect::route('login')->with('error', 'Usuário não encontrado.');
         }
-        
+
         $this->authorize('delete', $user);
 
         Auth::logout();

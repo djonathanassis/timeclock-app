@@ -5,11 +5,12 @@ declare(strict_types = 1);
 namespace App\Services\TimeEntry;
 
 use App\Models\TimeEntry;
+use App\Models\User;
 use App\Repositories\TimeEntry\TimeEntryRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Services\TimeEntry\Interfaces\TimeEntryServiceInterface;
-use Illuminate\Support\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -19,12 +20,12 @@ readonly class TimeEntryService implements TimeEntryServiceInterface
     private int $minInterval;
 
     private int $maxEntriesPerDay;
-    
+
     public function __construct(
         private TimeEntryRepositoryInterface $repository,
         private UserRepositoryInterface $userRepository
     ) {
-        $this->minInterval = config('time-entry.min_interval_between_entries', 120);
+        $this->minInterval      = config('time-entry.min_interval_between_entries', 120);
         $this->maxEntriesPerDay = config('time-entry.max_entries_per_day', 4);
     }
 
@@ -46,25 +47,26 @@ readonly class TimeEntryService implements TimeEntryServiceInterface
     public function registerTimeEntry(int $userId): TimeEntry
     {
         $user = $this->userRepository->findById($userId);
-        
-        if ($user === null) {
+
+        if (! $user instanceof User) {
             throw new \RuntimeException('Usuário não encontrado.');
         }
 
         if ($this->repository->hasUserRegisteredInTimeInterval($userId, $this->minInterval)) {
             $lastEntry = $this->getLastTimeEntry($userId);
             $remaining = $this->minInterval;
-            
-            if ($lastEntry) {
+
+            if ($lastEntry instanceof TimeEntry) {
                 $remaining = $this->minInterval - now()->diffInSeconds($lastEntry->recorded_at);
             }
-            
+
             throw new \RuntimeException(
                 "Aguarde mais {$remaining} segundos para registrar um novo ponto."
             );
         }
 
         $todayCount = $this->countTodayEntriesByUser($userId);
+
         if ($todayCount >= $this->maxEntriesPerDay) {
             throw new \RuntimeException(
                 "Você já atingiu o limite de " . $this->maxEntriesPerDay . " registros para hoje."
@@ -72,6 +74,7 @@ readonly class TimeEntryService implements TimeEntryServiceInterface
         }
 
         DB::beginTransaction();
+
         try {
             $timeEntry = $this->repository->create([
                 'user_id'     => $userId,
@@ -79,14 +82,15 @@ readonly class TimeEntryService implements TimeEntryServiceInterface
             ]);
 
             DB::commit();
+
             return $timeEntry;
         } catch (Throwable $e) {
             DB::rollBack();
             Log::error('Erro ao registrar ponto: ' . $e->getMessage(), [
-                'user_id' => $userId,
+                'user_id'   => $userId,
                 'exception' => $e,
             ]);
-            
+
             throw new \RuntimeException(
                 'Erro ao registrar ponto: ' . $e->getMessage(),
                 0,
@@ -105,6 +109,7 @@ readonly class TimeEntryService implements TimeEntryServiceInterface
         }
 
         $todayCount = $this->countTodayEntriesByUser($userId);
+
         return $todayCount < $this->maxEntriesPerDay;
     }
 
@@ -115,7 +120,7 @@ readonly class TimeEntryService implements TimeEntryServiceInterface
     {
         return $this->repository->findLastByUser($userId);
     }
-    
+
     /**
      * @inheritdoc
      */

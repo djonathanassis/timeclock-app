@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace App\Repositories\TimeEntry;
 
 use App\Models\TimeEntry;
-use Illuminate\Support\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 
 interface TimeEntryRepositoryInterface
 {
@@ -25,6 +25,7 @@ interface TimeEntryRepositoryInterface
      * @param Carbon $startDate
      * @param Carbon $endDate
      * @param array $requestData
+     * @return LengthAwarePaginator
      */
     public function findByUserAndDateRange(
         int $userId,
@@ -35,26 +36,29 @@ interface TimeEntryRepositoryInterface
 
     /**
      * @param int $userId
+     * @return bool
      */
     public function hasUserRegisteredToday(int $userId): bool;
 
     /**
      * @param array $data
+     * @return TimeEntry
      */
     public function create(array $data): TimeEntry;
 
     /**
      * @param int $userId
+     * @return TimeEntry|null
      */
     public function findLastByUser(int $userId): ?TimeEntry;
 
     /**
-     * @param int $userId 
+     * @param int $userId
      * @param int $seconds
      * @return bool
      */
     public function hasUserRegisteredInTimeInterval(int $userId, int $seconds): bool;
-    
+
     /**
      * @param int $userId
      * @return int

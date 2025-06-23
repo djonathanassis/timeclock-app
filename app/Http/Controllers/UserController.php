@@ -18,21 +18,26 @@ use Throwable;
 
 class UserController extends Controller
 {
+    /**
+     * @param UserServiceInterface $userService
+     */
     public function __construct(
         private readonly UserServiceInterface $userService
     ) {
     }
 
     /**
+     * @param Request $request
+     * @return View
      * @throws AuthorizationException
      */
     public function index(Request $request): View
     {
         $this->authorize('viewAny', User::class);
 
-        $user = $request->user();
+        $user      = $request->user();
         $managerId = $user ? $user->id : 0;
-        
+
         $employees = $this->userService->getUsersByManager($managerId, 10)
             ->appends($request->except('page'));
 
@@ -42,6 +47,7 @@ class UserController extends Controller
     }
 
     /**
+     * @return View
      * @throws AuthorizationException
      */
     public function create(): View
@@ -57,22 +63,16 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): RedirectResponse
     {
         $this->authorize('create', User::class);
-        
+
         try {
-            $userDTO =  UserDTO::fromArray($request->validated());
+            $userDTO = UserDTO::fromArray($request->validated());
             $this->userService->createUser($userDTO);
 
             return redirect()->route('users.index')
                 ->with('status', 'Funcionário cadastrado com sucesso!');
-        } catch (UserAlreadyExistsException $e) {
-            return redirect()->back()
-                ->withErrors([
-                    'error' => $e->getMessage(),
-                ])
-                ->withInput();
         } catch (Throwable $throwable) {
-            report($throwable); // Log para monitoramento em produção
-            
+            report($throwable);
+
             return redirect()->back()
                 ->withErrors([
                     'error' => 'Erro ao cadastrar funcionário. Tente novamente mais tarde.',
@@ -82,6 +82,8 @@ class UserController extends Controller
     }
 
     /**
+     * @param User $user
+     * @return View
      * @throws AuthorizationException
      */
     public function show(User $user): View
@@ -94,6 +96,8 @@ class UserController extends Controller
     }
 
     /**
+     * @param User $user
+     * @return View
      * @throws AuthorizationException
      */
     public function edit(User $user): View
@@ -106,27 +110,24 @@ class UserController extends Controller
     }
 
     /**
+     * @param UpdateUserRequest $request
+     * @param User $user
+     * @return RedirectResponse
      * @throws AuthorizationException
      */
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
         $this->authorize('update', $user);
-        
+
         try {
             $userDTO = UserDTO::fromArray($request->validated());
             $this->userService->updateUser($user, $userDTO);
 
             return redirect()->route('users.index')
                 ->with('status', 'Funcionário atualizado com sucesso!');
-        } catch (UserAlreadyExistsException $e) {
-            return redirect()->back()
-                ->withErrors([
-                    'error' => $e->getMessage(),
-                ])
-                ->withInput();
         } catch (Throwable $throwable) {
             report($throwable);
-            
+
             return redirect()->back()
                 ->withErrors([
                     'error' => 'Erro ao atualizar funcionário. Tente novamente mais tarde.',
@@ -136,6 +137,8 @@ class UserController extends Controller
     }
 
     /**
+     * @param User $user
+     * @return RedirectResponse
      * @throws AuthorizationException
      */
     public function destroy(User $user): RedirectResponse
@@ -149,7 +152,7 @@ class UserController extends Controller
                 ->with('status', 'Funcionário excluído com sucesso!');
         } catch (Throwable $throwable) {
             report($throwable);
-            
+
             return redirect()->back()
                 ->withErrors([
                     'error' => 'Erro ao excluir funcionário. Tente novamente mais tarde.',

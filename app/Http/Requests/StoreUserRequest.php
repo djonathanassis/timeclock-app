@@ -22,7 +22,7 @@ class StoreUserRequest extends FormRequest
             'cpf'          => ['required', 'string', 'unique:users', new ValidCpf()],
             'email'        => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password'     => ['required', 'string', 'min:8', 'confirmed'],
-            'job_position' => ['required', 'string','max:255'],
+            'job_position' => ['required', 'string', 'max:255'],
             'role'         => ['required', new Enum(UserRole::class)],
             'birth_date'   => ['required', 'date', 'before:today'],
             'zip_code'     => ['required', 'string', new ValidZipCode()],

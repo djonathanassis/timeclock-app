@@ -16,14 +16,14 @@ interface UserServiceInterface
      * @return User
      */
     public function createUser(UserDTO $userDTO): User;
-    
+
     /**
      * @param User $user
      * @param UserDTO $userDTO
      * @return User
      */
     public function updateUser(User $user, UserDTO $userDTO): User;
-    
+
     /**
      * @param User $user
      * @return bool

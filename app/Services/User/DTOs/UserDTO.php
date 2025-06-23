@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace App\Services\User\DTOs;
 
-use App\Enums\JobPosition;
 use Illuminate\Support\Facades\Hash;
 
 readonly class UserDTO
@@ -71,7 +70,7 @@ readonly class UserDTO
         if ($this->password !== null) {
             $data['password'] = Hash::make($this->password);
         }
-        
+
         return $data;
     }
 }

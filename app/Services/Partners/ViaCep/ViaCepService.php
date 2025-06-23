@@ -11,27 +11,19 @@ use Illuminate\Support\Facades\Log;
 
 class ViaCepService
 {
-    private const BASE_URL = 'https://viacep.com.br/ws/';
+    private const string BASE_URL = 'https://viacep.com.br/ws/';
 
-    private const CACHE_TTL = 2592000;
+    private const int CACHE_TTL = 2592000;
 
-    /**
-     * @param bool $offlineMode
-     * @param bool $acceptValidFormatOnFailure
-     */
     public function __construct(
         private readonly bool $offlineMode = false,
         private readonly bool $acceptValidFormatOnFailure = true
     ) {
     }
 
-    /**
-     * @param string $zipCode
-     * @return bool
-     */
     public function validateZipCode(string $zipCode): bool
     {
-        if (!$this->isValidFormat($zipCode)) {
+        if (! $this->isValidFormat($zipCode)) {
             return false;
         }
 
@@ -41,31 +33,25 @@ class ViaCepService
 
         $cacheKey = "valid_zipcode_{$zipCode}";
 
-        return Cache::remember($cacheKey, now()->addSeconds(self::CACHE_TTL), function () use ($zipCode) {
+        return Cache::remember($cacheKey, now()->addSeconds(self::CACHE_TTL), function () use ($zipCode): bool {
             try {
                 $response = $this->getHttpClient()
                     ->get(self::BASE_URL . "{$zipCode}/json/");
 
-                return $response->successful() && !isset($response->json()['erro']);
+                return $response->successful() && ! isset($response->json()['erro']);
             } catch (\Throwable $throwable) {
                 Log::warning("Erro ao validar CEP: " . $throwable->getMessage());
+
                 return $this->acceptValidFormatOnFailure;
             }
         });
     }
 
-    /**
-     * @param string $zipCode
-     * @return bool
-     */
     private function isValidFormat(string $zipCode): bool
     {
         return preg_match('/^\d{8}$/', $zipCode) === 1;
     }
 
-    /**
-     * @return PendingRequest
-     */
     private function getHttpClient(): PendingRequest
     {
         return Http::timeout(5)

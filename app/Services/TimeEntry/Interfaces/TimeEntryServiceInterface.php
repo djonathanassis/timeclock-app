@@ -4,12 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Services\TimeEntry\Interfaces;
 
-use App\Exceptions\MaxDailyEntriesException;
-use App\Exceptions\TimeEntryIntervalException;
-use App\Exceptions\TimeEntryRegistrationException;
 use App\Models\TimeEntry;
-use Illuminate\Support\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 
 interface TimeEntryServiceInterface
 {
@@ -29,9 +26,6 @@ interface TimeEntryServiceInterface
 
     /**
      * @param int $userId
-     * @throws TimeEntryIntervalException
-     * @throws MaxDailyEntriesException
-     * @throws TimeEntryRegistrationException
      * @return TimeEntry
      */
     public function registerTimeEntry(int $userId): TimeEntry;
@@ -47,7 +41,7 @@ interface TimeEntryServiceInterface
      * @return TimeEntry|null
      */
     public function getLastTimeEntry(int $userId): ?TimeEntry;
-    
+
     /**
      * @param int $userId
      * @return int

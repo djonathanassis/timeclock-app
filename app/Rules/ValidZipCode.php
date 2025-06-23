@@ -15,20 +15,20 @@ class ValidZipCode implements ValidationRule
         private readonly ViaCepService $addressService = new ViaCepService()
     ) {
     }
-    
+
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $stringValue = is_null($value) ? '' : (string) $value;
-        $zipCode = preg_replace('/\D/', '', $stringValue) ?? '';
+        $zipCode     = preg_replace('/\D/', '', $stringValue) ?? '';
 
         try {
-            if ($zipCode === '' || !$this->addressService->validateZipCode($zipCode)) {
+            if ($zipCode === '' || ! $this->addressService->validateZipCode($zipCode)) {
                 $fail('O :attribute informado não é um CEP válido.');
             }
         } catch (\Exception $e) {
             Log::warning("Erro ao validar CEP: {$e->getMessage()}");
 
-            if (!preg_match('/^\d{8}$/', $zipCode)) {
+            if (in_array(preg_match('/^\d{8}$/', $zipCode), [0, false], true)) {
                 $fail('O :attribute informado não é um CEP válido.');
             }
         }

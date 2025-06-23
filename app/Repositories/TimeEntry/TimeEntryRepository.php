@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace App\Repositories\TimeEntry;
 
 use App\Models\TimeEntry;
-use Illuminate\Support\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class TimeEntryRepository implements TimeEntryRepositoryInterface
@@ -18,19 +18,12 @@ class TimeEntryRepository implements TimeEntryRepositoryInterface
         ?Carbon $startDateTime = null,
         ?Carbon $endDateTime = null
     ): array {
-        $isSqlite = DB::connection()->getDriverName() === 'sqlite';
-        
-        // SQLite e MySQL têm funções diferentes para cálculo de idade
-        $ageCalculation = $isSqlite
-            ? "strftime('%Y', 'now') - strftime('%Y', u.birth_date) - (strftime('%m-%d', 'now') < strftime('%m-%d', u.birth_date))"
-            : "TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE())";
-        
         $query = "
             SELECT 
                 te.id,
                 u.name AS employee_name,
                 u.job_position,
-                {$ageCalculation} AS age,
+                TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE()) AS age,
                 m.name AS manager_name,
                 te.recorded_at
             FROM time_entries te
@@ -111,7 +104,7 @@ class TimeEntryRepository implements TimeEntryRepositoryInterface
     public function hasUserRegisteredInTimeInterval(int $userId, int $seconds): bool
     {
         $startTime = now()->subSeconds($seconds);
-        
+
         return TimeEntry::query()
             ->where('user_id', $userId)
             ->where('recorded_at', '>=', $startTime)

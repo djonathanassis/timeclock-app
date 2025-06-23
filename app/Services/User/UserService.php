@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Services\User;
 
@@ -13,26 +13,21 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 readonly class UserService implements UserServiceInterface
 {
-    /**
-     * @param UserRepositoryInterface $userRepository
-     */
     public function __construct(
         private UserRepositoryInterface $userRepository
-    ) {}
-
-    /**
-     * @param UserDTO $userDTO
-     * @return User
-     */
-    public function createUser(UserDTO $userDTO): User
-    {
-       return $this->userRepository->create($userDTO->toArray());
+    ) {
     }
 
     /**
-     * @param User $user
-     * @param UserDTO $userDTO
-     * @return User
+     * @inheritdoc
+     */
+    public function createUser(UserDTO $userDTO): User
+    {
+        return $this->userRepository->create($userDTO->toArray());
+    }
+
+    /**
+     * @inheritdoc
      */
     public function updateUser(User $user, UserDTO $userDTO): User
     {
@@ -40,22 +35,19 @@ readonly class UserService implements UserServiceInterface
     }
 
     /**
-     * @param User $user
-     * @return bool
+     * @inheritdoc
      */
     public function deleteUser(User $user): bool
     {
-        if (!$user->exists) {
+        if (! $user->exists) {
             return false;
         }
 
-       return $this->userRepository->delete($user);
+        return $this->userRepository->delete($user);
     }
 
     /**
-     * @param int $managerId
-     * @param int $perPage
-     * @return LengthAwarePaginator
+     * @inheritdoc
      */
     public function getUsersByManager(int $managerId, int $perPage = 10): LengthAwarePaginator
     {
@@ -63,7 +55,7 @@ readonly class UserService implements UserServiceInterface
     }
 
     /**
-     * @return Collection
+     * @inheritdoc
      */
     public function getAllUsers(): Collection
     {
@@ -71,8 +63,7 @@ readonly class UserService implements UserServiceInterface
     }
 
     /**
-     * @param int $userId
-     * @return User|null
+     * @inheritdoc
      */
     public function getUserById(int $userId): ?User
     {
