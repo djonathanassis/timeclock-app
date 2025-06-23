@@ -4,9 +4,11 @@ declare(strict_types = 1);
 
 namespace App\Http\Controllers;
 
-use App\Events\TimeEntryRegistered;
+use App\Helpers\DateHelper;
 use App\Models\TimeEntry;
-use App\Models\User;
+use App\Services\TimeEntry\Interfaces\TimeEntryServiceInterface;
+use App\Services\User\Interfaces\UserServiceInterface;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,6 +19,12 @@ use Illuminate\View\View;
 
 class TimeEntryController extends Controller
 {
+    public function __construct(
+        private readonly TimeEntryServiceInterface $timeEntryService,
+        private readonly UserServiceInterface $userService
+    ) {
+    }
+
     /**
      * @throws AuthorizationException
      */
@@ -24,51 +32,44 @@ class TimeEntryController extends Controller
     {
         $this->authorize('viewAny', TimeEntry::class);
 
-        $userId    = $request->query('user_id', Auth::id());
-        $startDate = $this->parseDate($request->query('start_date'), Carbon::now()->startOfMonth());
-        $endDate   = $this->parseDate($request->query('end_date'), Carbon::now()->endOfDay());
+        $userId    = (int) $request->query('user_id', Auth::id());
+        $startDate = DateHelper::parseDate($request->query('start_date'), Carbon::now()->startOfMonth());
+        $endDate   = DateHelper::parseDate($request->query('end_date'), Carbon::now()->endOfDay());
 
-        $timeEntries = TimeEntry::query()
-            ->with('user')
-            ->InDateRange(
-                $startDate->startOfDay(),
-                $endDate->endOfDay(),
-            )
-            ->where('user_id', $userId)
-            ->orderBy('recorded_at', 'desc')
-            ->paginate(15)
-            ->appends($request->except('page'));
+        $timeEntries = $this->timeEntryService->listTimeEntries(
+            $userId,
+            $startDate,
+            $endDate,
+            $request->except('page')
+        );
 
         $users = [];
 
         if ($this->userCan('viewOtherUserEntries')) {
-            $users = User::orderBy('name')->get(['id', 'name']);
+            $users = $this->userService->getAllUsers();
         }
 
         // Obter o último registro de ponto do usuário atual
-        $lastTimeEntry = TimeEntry::query()
-            ->where('user_id', Auth::id())
-            ->latest('recorded_at')
-            ->first();
+        $lastTimeEntry = $this->timeEntryService->getLastTimeEntry((int) Auth::id());
 
         // Verificar se o último registro foi feito hoje
         $registeredToday = $lastTimeEntry && $lastTimeEntry->recorded_at->format('Y-m-d') === Carbon::today()->format('Y-m-d');
         
         // Obter o nome do usuário atual para exibição
-        $currentUser = User::find($userId);
-        $userName = $currentUser ? $currentUser->name : 'Usuário não encontrado';
+        $currentUser = $this->userService->getUserById($userId);
+        $userName    = $currentUser->name ?? 'Usuário não encontrado';
 
         return view(
             'time-entries.index',
             [
-                'timeEntries' => $timeEntries, 
-                'userId' => $userId, 
-                'startDate' => $startDate, 
-                'endDate' => $endDate, 
-                'users' => $users, 
-                'lastTimeEntry' => $lastTimeEntry, 
+                'timeEntries'     => $timeEntries,
+                'userId'          => $userId,
+                'startDate'       => $startDate,
+                'endDate'         => $endDate,
+                'users'           => $users,
+                'lastTimeEntry'   => $lastTimeEntry,
                 'registeredToday' => $registeredToday,
-                'userName' => $userName
+                'userName'        => $userName,
             ]
         );
     }
@@ -78,36 +79,27 @@ class TimeEntryController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $userId = Auth::id();
-
-        if (TimeEntry::todayForUser($userId)->exists()) {
+        $this->authorize('registerTimeEntry', TimeEntry::class);
+        
+        try {
+            $this->timeEntryService->registerTimeEntry((int) Auth::id());
+            
             return redirect()->route('time-entries.index')
-                ->with('error', 'Você já registrou um ponto nos últimos 2 minutos.');
+                ->with('status', 'Ponto registrado com sucesso!');
+                
+        } catch (Exception $e) {
+            return redirect()->route('time-entries.index')
+                ->with('error', $e->getMessage());
         }
-
-        $timeEntry = TimeEntry::query()->create([
-            'user_id'     => $userId,
-            'recorded_at' => now(),
-        ]);
-
-        event(new TimeEntryRegistered($timeEntry));
-
-        return redirect()->route('time-entries.index')
-            ->with('status', 'Ponto registrado com sucesso!');
-    }
-
-    /**
-     * Converte uma string de data em um objeto Carbon.
-     */
-    private function parseDate(?string $date, Carbon $default): Carbon
-    {
-        return $date !== null && $date !== '' && $date !== '0' ? Carbon::parse($date) : $default;
     }
 
     /**
      * Verifica se o usuário atual tem uma determinada permissão.
+     * 
+     * @param string $ability Nome da permissão
+     * @param mixed $arguments Argumentos adicionais
      */
-    private function userCan(string $ability, $arguments = []): bool
+    private function userCan(string $ability, mixed $arguments = []): bool
     {
         return Auth::check() && Gate::allows($ability, $arguments ?: TimeEntry::class);
     }

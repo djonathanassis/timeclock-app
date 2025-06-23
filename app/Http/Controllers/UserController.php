@@ -4,18 +4,25 @@ declare(strict_types = 1);
 
 namespace App\Http\Controllers;
 
-use App\Enums\UserRole;
+use App\Exceptions\UserAlreadyExistsException;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use App\Services\User\DTOs\UserDTO;
+use App\Services\User\Interfaces\UserServiceInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use Throwable;
 
 class UserController extends Controller
 {
+    public function __construct(
+        private readonly UserServiceInterface $userService
+    ) {
+    }
+
     /**
      * @throws AuthorizationException
      */
@@ -23,10 +30,11 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
-        $employees = User::query()
-            ->where('role', UserRole::EMPLOYEE->value)
-            ->orderBy('name')
-            ->paginate(10);
+        $user = $request->user();
+        $managerId = $user ? $user->id : 0;
+        
+        $employees = $this->userService->getUsersByManager($managerId, 10)
+            ->appends($request->except('page'));
 
         return view('users.index', [
             'employees' => $employees,
@@ -43,36 +51,34 @@ class UserController extends Controller
         return view('users.create');
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function store(StoreUserRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
+        $this->authorize('create', User::class);
+        
+        try {
+            $userDTO = UserDTO::fromStoreRequest($request);
+            $this->userService->createUser($userDTO);
 
-        $admin = $request->user();
-
-        if ($admin === null) {
-            abort(403);
+            return redirect()->route('users.index')
+                ->with('status', 'Funcionário cadastrado com sucesso!');
+        } catch (UserAlreadyExistsException $e) {
+            return redirect()->back()
+                ->withErrors([
+                    'error' => $e->getMessage(),
+                ])
+                ->withInput();
+        } catch (Throwable $throwable) {
+            report($throwable); // Log para monitoramento em produção
+            
+            return redirect()->back()
+                ->withErrors([
+                    'error' => 'Erro ao cadastrar funcionário. Tente novamente mais tarde.',
+                ])
+                ->withInput();
         }
-
-        User::query()->create([
-            'name'         => $validated['name'],
-            'cpf'          => $validated['cpf'],
-            'email'        => $validated['email'],
-            'password'     => Hash::make($validated['password']),
-            'job_position' => $validated['job_position'],
-            'birth_date'   => $validated['birth_date'],
-            'zip_code'     => $validated['zip_code'],
-            'street'       => $validated['street'],
-            'number'       => $validated['number'] ?? null,
-            'complement'   => $validated['complement'] ?? null,
-            'neighborhood' => $validated['neighborhood'],
-            'city'         => $validated['city'],
-            'state'        => $validated['state'],
-            'role'         => UserRole::EMPLOYEE->value,
-            'manager_id'   => $admin->id,
-        ]);
-
-        return redirect()->route('users.index')
-            ->with('status', 'Funcionário cadastrado com sucesso!');
     }
 
     /**
@@ -99,34 +105,29 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * @throws AuthorizationException
-     */
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $this->authorize('update', $user);
+        try {
+            $userDTO = UserDTO::fromUpdateRequest($request);
+            $this->userService->updateUser($user, $userDTO);
 
-        $validated = $request->validated();
-
-        $updateData = [
-            'name'         => $validated['name'],
-            'cpf'          => $validated['cpf'],
-            'email'        => $validated['email'],
-            'job_position' => $validated['job_position'],
-            'birth_date'   => $validated['birth_date'],
-            'zip_code'     => $validated['zip_code'],
-            'street'       => $validated['street'],
-            'number'       => $validated['number'] ?? null,
-            'complement'   => $validated['complement'] ?? null,
-            'neighborhood' => $validated['neighborhood'],
-            'city'         => $validated['city'],
-            'state'        => $validated['state'],
-        ];
-
-        $user->update($updateData);
-
-        return redirect()->route('users.index')
-            ->with('status', 'Funcionário atualizado com sucesso!');
+            return redirect()->route('users.index')
+                ->with('status', 'Funcionário atualizado com sucesso!');
+        } catch (UserAlreadyExistsException $e) {
+            return redirect()->back()
+                ->withErrors([
+                    'error' => $e->getMessage(),
+                ])
+                ->withInput();
+        } catch (Throwable $throwable) {
+            report($throwable);
+            
+            return redirect()->back()
+                ->withErrors([
+                    'error' => 'Erro ao atualizar funcionário. Tente novamente mais tarde.',
+                ])
+                ->withInput();
+        }
     }
 
     /**
@@ -136,9 +137,18 @@ class UserController extends Controller
     {
         $this->authorize('delete', $user);
 
-        $user->delete();
+        try {
+            $this->userService->deleteUser($user);
 
-        return redirect()->route('users.index')
-            ->with('status', 'Funcionário excluído com sucesso!');
+            return redirect()->route('users.index')
+                ->with('status', 'Funcionário excluído com sucesso!');
+        } catch (Throwable $throwable) {
+            report($throwable);
+            
+            return redirect()->back()
+                ->withErrors([
+                    'error' => 'Erro ao excluir funcionário. Tente novamente mais tarde.',
+                ]);
+        }
     }
 }

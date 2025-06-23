@@ -9,24 +9,11 @@ use App\Enums\UserRole;
 use App\Rules\ValidCpf;
 use App\Rules\ValidZipCode;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Enum;
 
 class StoreUserRequest extends FormRequest
 {
-    /**
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        $user = $this->user();
-
-        if ($user === null) {
-            return false;
-        }
-
-        return $user->can('admin');
-    }
-
     /**
      * @return array<string, mixed>
      */
@@ -51,16 +38,13 @@ class StoreUserRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return void
-     */
     protected function prepareForValidation(): void
     {
-        if ($this->has('cpf') || $this->has('zip_code')) {
-            $this->merge([
-                'cpf' => preg_replace('/\D/', '', (string) $this->input('cpf')),
-                'zip_code' => preg_replace('/\D/', '', (string) $this->input('zip_code')),
-            ]);
-        }
+        $this->merge([
+            'manager_id' => $this->user()?->id,
+            'password'   => Hash::make((string) $this->input('password')),
+            'cpf'        => preg_replace('/\D/', '', (string) $this->input('cpf')),
+            'zip_code'   => preg_replace('/\D/', '', (string) $this->input('zip_code')),
+        ]);
     }
 }

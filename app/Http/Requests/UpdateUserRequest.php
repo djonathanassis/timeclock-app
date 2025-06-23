@@ -13,20 +13,6 @@ use Illuminate\Validation\Rule;
 class UpdateUserRequest extends FormRequest
 {
     /**
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        $user = $this->user();
-
-        if ($user === null) {
-            return false;
-        }
-
-        return $user->can('admin');
-    }
-
-    /**
      * @return array<string, mixed>
      */
     public function rules(): array
@@ -50,7 +36,6 @@ class UpdateUserRequest extends FormRequest
                 'max:255',
                 Rule::unique('users')->ignore($userId),
             ],
-            'password'     => ['nullable', 'string', 'min:8', 'confirmed'],
             'job_position' => ['required', 'string', 'max:255'],
             'birth_date'   => ['required', 'date', 'before:today'],
             'zip_code'     => ['required', 'string', new ValidZipCode()],
@@ -63,14 +48,11 @@ class UpdateUserRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return void
-     */
     protected function prepareForValidation(): void
     {
         if ($this->has('cpf') || $this->has('zip_code')) {
             $this->merge([
-                'cpf' => preg_replace('/\D/', '', (string) $this->input('cpf')),
+                'cpf'      => preg_replace('/\D/', '', (string) $this->input('cpf')),
                 'zip_code' => preg_replace('/\D/', '', (string) $this->input('zip_code')),
             ]);
         }

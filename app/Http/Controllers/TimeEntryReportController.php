@@ -5,24 +5,26 @@ declare(strict_types = 1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TimeEntryReportRequest;
+use App\Models\TimeEntry;
 use App\Reports\GetTimeRecordReport;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\View\View;
 
 class TimeEntryReportController extends Controller
 {
     /**
-     * @param TimeEntryReportRequest $request
-     * @param GetTimeRecordReport $report
-     * @return View
      * @throws Exception
+     * @throws AuthorizationException
      */
     public function __invoke(
         TimeEntryReportRequest $request,
         GetTimeRecordReport $report
     ): View {
+        $this->authorize('report', TimeEntry::class);
+        
         $startDate = $request->getStartDateTime();
-        $endDate = $request->getEndDateTime();
+        $endDate   = $request->getEndDateTime();
 
         $entries = $report->execute($startDate, $endDate);
 

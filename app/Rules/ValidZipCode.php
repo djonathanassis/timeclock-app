@@ -4,34 +4,35 @@ declare(strict_types = 1);
 
 namespace App\Rules;
 
+use App\Services\Address\AddressService;
+use App\Services\Address\AddressServiceInterface;
+use App\Services\Address\Providers\ViaCepProvider;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
-class ValidZipCode implements ValidationRule
+readonly class ValidZipCode implements ValidationRule
 {
+    public function __construct(
+        private AddressServiceInterface $addressService = new AddressService(new ViaCepProvider())
+    ) {
+    }
+    
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $zipCode = preg_replace('/\D/', '', (string) $value);
+        $stringValue = is_null($value) ? '' : (string) $value;
+        $zipCode = preg_replace('/\D/', '', $stringValue) ?? '';
 
-        if (! $this->validFormat($zipCode) || ! $this->validateZipCode($zipCode)) {
-            $fail('O :attribute informado não é um CEP válido.');
-        }
-    }
-
-    private function validFormat(string $zipCode): bool
-    {
-        return strlen($zipCode) !== 8 || preg_match('/^(\d)\1{7}$/', $zipCode);
-    }
-
-    private function validateZipCode(string $cep): bool
-    {
         try {
-            $response = Http::get("https://viacep.com.br/ws/{$cep}/json/");
+            if ($zipCode === '' || !$this->addressService->validateZipCode($zipCode)) {
+                $fail('O :attribute informado não é um CEP válido.');
+            }
+        } catch (\Exception $e) {
+            Log::warning("Erro ao validar CEP: {$e->getMessage()}");
 
-            return $response->successful() && ! isset($response['erro']);
-        } catch (\Exception) {
-            return false;
+            if (!preg_match('/^\d{8}$/', $zipCode)) {
+                $fail('O :attribute informado não é um CEP válido.');
+            }
         }
     }
 }

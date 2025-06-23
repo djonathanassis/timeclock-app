@@ -58,4 +58,9 @@ class UserPolicy
 
         return $user->id === $employee->id;
     }
+
+    public function updateProfile(User $user, User $profile): bool
+    {
+        return $user->id === $profile->id;
+    }
 }

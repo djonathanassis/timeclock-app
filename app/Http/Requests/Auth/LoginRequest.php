@@ -15,6 +15,10 @@ class LoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     * 
+     * Para formulários de autenticação, o padrão é permitir a tentativa
+     * de login para todos, pois restrições são aplicadas após a validação
+     * e verificação de credenciais.
      */
     public function authorize(): bool
     {

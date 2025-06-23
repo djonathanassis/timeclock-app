@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Models\TimeEntry;
 use App\Models\User;
 use Illuminate\Support\Carbon;
@@ -26,7 +27,9 @@ class DashboardController extends Controller
         // Estatísticas para administradores
         $stats = [];
 
-        if (Auth::user()->role === \App\Enums\UserRole::ADMIN) {
+        // Verificar se o usuário está autenticado e se é administrador
+        $user = Auth::user();
+        if ($user && $user->role === UserRole::ADMIN) {
             $stats = [
                 'total_users'         => User::count(),
                 'total_entries_today' => TimeEntry::whereDate('recorded_at', Carbon::today())->count(),

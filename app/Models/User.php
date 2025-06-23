@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace App\Models;
 
-use App\Enums\JobPosition;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use DateTime;
@@ -82,8 +81,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
             'birth_date'        => 'date',
-            'role'              => UserRole::class,
-            'job_position'      => JobPosition::class,
+            'role'              => UserRole::class
         ];
     }
 

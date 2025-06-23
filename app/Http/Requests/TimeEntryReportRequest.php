@@ -17,20 +17,6 @@ use Illuminate\Support\Carbon;
 class TimeEntryReportRequest extends FormRequest
 {
     /**
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        $user = $this->user();
-
-        if ($user === null) {
-            return false;
-        }
-
-        return $user->can('report', TimeEntry::class);
-    }
-
-    /**
      * @return array<string, mixed>
      */
     public function rules(): array
@@ -42,14 +28,14 @@ class TimeEntryReportRequest extends FormRequest
     }
 
     /**
-     * @return ?CarbonInterface
      * @throws Exception
      */
     public function getStartDateTime(): ?CarbonInterface
     {
         if ($this->filled('start_date')) {
-           return Carbon::parse($this->start_date)->startOfDay();
+            return Carbon::parse($this->start_date)->startOfDay();
         }
+
         return null;
     }
 
@@ -62,6 +48,7 @@ class TimeEntryReportRequest extends FormRequest
         if ($this->filled('end_date')) {
             return Carbon::parse($this->end_date)->endOfDay();
         }
+
         return null;
     }
 }

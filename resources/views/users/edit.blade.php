@@ -57,7 +57,13 @@
                                 <!-- Cargo -->
                                 <div>
                                     <x-input-label for="job_position" :value="__('Cargo')" />
-                                    <x-text-input id="job_position" class="block mt-1 w-full" type="text" name="job_position" :value="old('job_position', $employee->job_position)" required />
+                                    <select id="job_position" name="job_position" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" required>
+                                        <option value="">Selecione um cargo</option>
+                                        <option value="developer" {{ old('job_position', $employee->job_position->value) == 'developer' ? 'selected' : '' }}>Desenvolvedor</option>
+                                        <option value="manager" {{ old('job_position', $employee->job_position->value) == 'manager' ? 'selected' : '' }}>Gerente</option>
+                                        <option value="analyst" {{ old('job_position', $employee->job_position->value) == 'analyst' ? 'selected' : '' }}>Analista</option>
+                                        <option value="other" {{ old('job_position', $employee->job_position->value) == 'other' ? 'selected' : '' }}>Outro</option>
+                                    </select>
                                     <x-input-error :messages="$errors->get('job_position')" class="mt-2" />
                                 </div>
 
@@ -196,10 +202,10 @@
             // Inicializa os valores do formulário com os valores existentes
             if (window.employeeForm) {
                 const form = employeeForm();
-                form.street = '{{ old('street', $employee->street) }}';
-                form.neighborhood = '{{ old('neighborhood', $employee->neighborhood) }}';
-                form.city = '{{ old('city', $employee->city) }}';
-                form.state = '{{ old('state', $employee->state) }}';
+                form.street = '{!! old('street', $employee->street) !!}';
+                form.neighborhood = '{!! old('neighborhood', $employee->neighborhood) !!}';
+                form.city = '{!! old('city', $employee->city) !!}';
+                form.state = '{!! old('state', $employee->state) !!}';
             }
         });
     </script>

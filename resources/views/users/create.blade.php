@@ -47,7 +47,13 @@
                                 <!-- Cargo -->
                                 <div>
                                     <x-input-label for="job_position" :value="__('Cargo')" />
-                                    <x-text-input id="job_position" class="block mt-1 w-full" type="text" name="job_position" :value="old('job_position')" required />
+                                    <select id="job_position" name="job_position" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" required>
+                                        <option value="">Selecione um cargo</option>
+                                        <option value="developer" {{ old('job_position') == 'developer' ? 'selected' : '' }}>Desenvolvedor</option>
+                                        <option value="manager" {{ old('job_position') == 'manager' ? 'selected' : '' }}>Gerente</option>
+                                        <option value="analyst" {{ old('job_position') == 'analyst' ? 'selected' : '' }}>Analista</option>
+                                        <option value="other" {{ old('job_position') == 'other' ? 'selected' : '' }}>Outro</option>
+                                    </select>
                                     <x-input-error :messages="$errors->get('job_position')" class="mt-2" />
                                 </div>
 
@@ -186,10 +192,10 @@
             // Inicializa os valores do formulário com os valores antigos
             if (window.employeeForm) {
                 const form = employeeForm();
-                form.street = '{{ old('street') }}';
-                form.neighborhood = '{{ old('neighborhood') }}';
-                form.city = '{{ old('city') }}';
-                form.state = '{{ old('state') }}';
+                form.street = '{!! old('street') !!}';
+                form.neighborhood = '{!! old('neighborhood') !!}';
+                form.city = '{!! old('city') !!}';
+                form.state = '{!! old('state') !!}';
             }
         });
     </script>

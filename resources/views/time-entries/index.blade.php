@@ -114,13 +114,21 @@
                     </div>
 
                     <div class="overflow-x-auto bg-white rounded-lg shadow">
+                        <!-- Exibindo informações do usuário -->
+                        <div class="p-4 bg-blue-50 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-blue-800">
+                                Registros de ponto: <span class="font-bold">{{ $userName ?? Auth::user()->name }}</span>
+                            </h3>
+                            <p class="text-sm text-blue-600">
+                                Total de registros no período selecionado: {{ $timeEntries->total() }}
+                            </p>
+                        </div>
+                        
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                    @if (Auth::user()->role === \App\Enums\UserRole::ADMIN && !$userId)
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Funcionário</th>
-                                    @endif
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
                                 </tr>
@@ -131,11 +139,9 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm font-medium text-gray-900">{{ $entry->id }}</div>
                                         </td>
-                                        @if (Auth::user()->role === \App\Enums\UserRole::ADMIN && !$userId)
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm font-medium text-gray-900">{{ $entry->user->name ?? 'N/A' }}</div>
                                         </td>
-                                        @endif
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-500">{{ $entry->recorded_at->format('d/m/Y') }}</div>
                                         </td>
@@ -145,7 +151,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="{{ Auth::user()->role === \App\Enums\UserRole::ADMIN && !$userId ? '4' : '3' }}" class="px-6 py-8 whitespace-nowrap text-sm text-gray-500 text-center">
+                                        <td colspan="4" class="px-6 py-8 whitespace-nowrap text-sm text-gray-500 text-center">
                                             <div class="flex flex-col items-center justify-center space-y-2">
                                                 <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>

@@ -29,11 +29,9 @@ class VerifyEmailController extends Controller
             return redirect()->intended(route('dashboard', absolute: false) . '?verified=1');
         }
 
-        if ($user->markEmailAsVerified()) {
-            // Garantir que o usuário implementa MustVerifyEmail
-            if ($user instanceof MustVerifyEmail) {
-                event(new Verified($user));
-            }
+        // Garantir que o usuário implementa MustVerifyEmail
+        if ($user->markEmailAsVerified() && $user instanceof MustVerifyEmail) {
+            event(new Verified($user));
         }
 
         return redirect()->intended(route('dashboard', absolute: false) . '?verified=1');
