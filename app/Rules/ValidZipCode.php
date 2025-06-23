@@ -4,9 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Rules;
 
-use App\Services\Address\AddressService;
-use App\Services\Address\AddressServiceInterface;
-use App\Services\Address\Providers\ViaCepProvider;
+use App\Services\Partners\ViaCep\ViaCepService;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 readonly class ValidZipCode implements ValidationRule
 {
     public function __construct(
-        private AddressServiceInterface $addressService = new AddressService(new ViaCepProvider())
+        private ViaCepService $addressService = new ViaCepService()
     ) {
     }
     
