@@ -1,61 +1,147 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Registro de Ponto Eletrônico
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema de registro de ponto eletrônico desenvolvido com Laravel 12, permitindo que funcionários registrem seus pontos e administradores gerenciem usuários e visualizem relatórios.
 
-## About Laravel
+## Requisitos do Sistema
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Docker e Docker Compose
+- Git
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tecnologias Utilizadas
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.3 com Laravel 12
+- MySQL 8.0
+- Laravel Sail (ambiente Docker)
+- Blade para templates
 
-## Learning Laravel
+## Funcionalidades
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Perfil Funcionário
+- Login com autenticação
+- Registro de ponto
+- Visualização do histórico de pontos registrados
+- Troca de senha
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Perfil Administrador
+- CRUD completo de funcionários
+- Visualização de pontos registrados por qualquer funcionário
+- Relatório de pontos com filtro por período
+- Gestão de funcionários subordinados
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Instalação com Laravel Sail
 
-## Laravel Sponsors
+1. Clone o repositório:
+```bash
+git clone https://github.com/seu-usuario/timeclock-app.git
+cd timeclock-app
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+2. Configure o arquivo de ambiente:
+```bash
+cp .env.example .env
+```
 
-### Premium Partners
+3. Inicie o ambiente Docker com Laravel Sail:
+```bash
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php83-composer:latest \
+    composer install --ignore-platform-reqs
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+4. Inicie os containers:
+```bash
+./vendor/bin/sail up -d
+```
 
-## Contributing
+5. Gere a chave da aplicação:
+```bash
+./vendor/bin/sail artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+6. Execute as migrações e seeders:
+```bash
+./vendor/bin/sail artisan migrate --seed
+```
 
-## Code of Conduct
+## Acesso ao Sistema
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Após a instalação, o sistema estará disponível em: http://localhost
 
-## Security Vulnerabilities
+### Credenciais padrão:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Administrador:**
+- Email: admin@exemplo.com
+- Senha: password
 
-## License
+**Funcionário:**
+- Email: funcionario@exemplo.com
+- Senha: password
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Executando Testes
+
+Para executar os testes automatizados:
+
+```bash
+./vendor/bin/sail artisan test
+```
+
+## Estrutura do Projeto
+
+- `app/Models`: Modelos do Eloquent
+- `app/Http/Controllers`: Controladores da aplicação
+- `app/Http/Requests`: Classes de validação de formulários
+- `app/DTOs`: Objetos de transferência de dados
+- `app/Rules`: Regras de validação personalizadas
+- `app/Services`: Serviços da aplicação
+- `app/Enums`: Enumerações para cargos e papéis
+- `app/Notifications`: Notificações do sistema
+- `app/Listeners`: Listeners para eventos
+- `database/migrations`: Migrações do banco de dados
+- `resources/views`: Templates Blade
+- `tests`: Testes automatizados
+
+## Funcionalidades Especiais
+
+### Validação de CPF
+O sistema valida automaticamente os CPFs inseridos, garantindo que sejam válidos e únicos no banco de dados.
+
+### Consulta de CEP
+Integração com a API ViaCEP para preenchimento automático de endereços a partir do CEP informado.
+
+### Relatório de Pontos
+Implementação de relatório utilizando SQL puro para listar os registros de ponto com informações detalhadas dos funcionários e seus gestores.
+
+### Notificações
+O sistema notifica gestores quando seus funcionários registram pontos.
+
+## Decisões Técnicas
+
+- Utilização de DTOs para transferência de dados entre camadas
+- Implementação de middlewares para controle de acesso baseado em papéis
+- Uso de soft deletes para exclusão lógica de registros
+- Testes automatizados para garantir o funcionamento correto das funcionalidades
+
+## Comandos Úteis do Laravel Sail
+
+```bash
+# Iniciar os containers
+./vendor/bin/sail up -d
+
+# Parar os containers
+./vendor/bin/sail down
+
+# Executar comandos Artisan
+./vendor/bin/sail artisan [comando]
+
+# Executar comandos Composer
+./vendor/bin/sail composer [comando]
+
+# Executar comandos NPM
+./vendor/bin/sail npm [comando]
+
+# Executar testes
+./vendor/bin/sail test
+```
