@@ -2,8 +2,10 @@
 
 declare(strict_types = 1);
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TimeEntryController;
+use App\Http\Controllers\TimeEntryReportController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -12,7 +14,7 @@ Route::get('/', static fn () => view('welcome'));
 // Rotas acessíveis apenas para usuários autenticados
 Route::middleware('auth')->group(function (): void {
     // Dashboard
-    Route::get('/dashboard', static fn () => view('dashboard'))->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Perfil do usuário
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -25,7 +27,7 @@ Route::middleware('auth')->group(function (): void {
 
     Route::resource('users', UserController::class);
 
-    Route::get('/reports/time-entries', [TimeEntryController::class, 'report'])->name('time-entries.report');
+    Route::get('/reports/time-entries', TimeEntryReportController::class)->name('time-entries.report');
 });
 
 require __DIR__ . '/auth.php';
