@@ -4,13 +4,11 @@ declare(strict_types = 1);
 
 namespace App\Services\TimeEntry;
 
-use App\Events\TimeEntryRegistered;
 use App\Models\TimeEntry;
 use App\Repositories\TimeEntry\TimeEntryRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Services\TimeEntry\Interfaces\TimeEntryServiceInterface;
 use Carbon\CarbonInterface;
-use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -79,8 +77,6 @@ readonly class TimeEntryService implements TimeEntryServiceInterface
                 'user_id'     => $userId,
                 'recorded_at' => now(),
             ]);
-
-            event(new TimeEntryRegistered($timeEntry));
 
             DB::commit();
             return $timeEntry;
