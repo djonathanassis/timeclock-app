@@ -9,10 +9,10 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Log;
 
-readonly class ValidZipCode implements ValidationRule
+class ValidZipCode implements ValidationRule
 {
     public function __construct(
-        private ViaCepService $addressService = new ViaCepService()
+        private readonly ViaCepService $addressService = new ViaCepService()
     ) {
     }
     

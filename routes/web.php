@@ -11,17 +11,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', static fn () => view('welcome'));
 
-// Rotas acessíveis apenas para usuários autenticados
 Route::middleware('auth')->group(function (): void {
-    // Dashboard - acessível para todos os usuários autenticados
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Perfil do usuário - acessível para todos os usuários autenticados
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Rotas para funcionários (registro de ponto) - acessível para todos os usuários autenticados
     Route::get('/time-entries', [TimeEntryController::class, 'index'])->name('time-entries.index');
     Route::post('/time-entries', [TimeEntryController::class, 'store'])->name('time-entries.store');
 

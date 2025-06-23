@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Tests\Feature\Auth;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -21,23 +22,28 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'email' => 'test@example.com',
+            'password' => bcrypt('password'),
+        ]);
 
         $response = $this->post('/login', [
-            'email'    => $user->email,
+            'email' => 'test@example.com',
             'password' => 'password',
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect('/dashboard');
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'email' => 'test@example.com',
+        ]);
 
         $this->post('/login', [
-            'email'    => $user->email,
+            'email' => 'test@example.com',
             'password' => 'wrong-password',
         ]);
 
@@ -52,5 +58,27 @@ class AuthenticationTest extends TestCase
 
         $this->assertGuest();
         $response->assertRedirect('/');
+    }
+
+    public function test_user_with_admin_role_can_access_admin_routes(): void
+    {
+        $admin = User::factory()->create([
+            'role' => UserRole::ADMIN,
+        ]);
+
+        $response = $this->actingAs($admin)->get('/users');
+
+        $response->assertStatus(200);
+    }
+
+    public function test_user_with_employee_role_cannot_access_admin_routes(): void
+    {
+        $employee = User::factory()->create([
+            'role' => UserRole::EMPLOYEE,
+        ]);
+
+        $response = $this->actingAs($employee)->get('/users');
+
+        $response->assertStatus(403);
     }
 }
