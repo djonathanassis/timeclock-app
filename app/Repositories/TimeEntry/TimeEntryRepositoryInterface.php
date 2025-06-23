@@ -5,31 +5,31 @@ declare(strict_types = 1);
 namespace App\Repositories\TimeEntry;
 
 use App\Models\TimeEntry;
-use Carbon\CarbonInterface;
+use Illuminate\Support\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface TimeEntryRepositoryInterface
 {
     /**
-     * @param CarbonInterface|null $startDateTime
-     * @param CarbonInterface|null $endDateTime
+     * @param Carbon|null $startDateTime
+     * @param Carbon|null $endDateTime
      * @return array
      */
     public function getTimeRecordReport(
-        ?CarbonInterface $startDateTime = null,
-        ?CarbonInterface $endDateTime = null
+        ?Carbon $startDateTime = null,
+        ?Carbon $endDateTime = null
     ): array;
 
     /**
      * @param int $userId
-     * @param CarbonInterface $startDate
-     * @param CarbonInterface $endDate
+     * @param Carbon $startDate
+     * @param Carbon $endDate
      * @param array $requestData
      */
     public function findByUserAndDateRange(
         int $userId,
-        CarbonInterface $startDate,
-        CarbonInterface $endDate,
+        Carbon $startDate,
+        Carbon $endDate,
         array $requestData = []
     ): LengthAwarePaginator;
 

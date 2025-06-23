@@ -7,7 +7,7 @@ namespace Database\Seeders;
 use App\Enums\UserRole;
 use App\Models\TimeEntry;
 use App\Models\User;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Seeder;
 use Random\RandomException;
 

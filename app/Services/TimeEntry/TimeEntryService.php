@@ -8,7 +8,7 @@ use App\Models\TimeEntry;
 use App\Repositories\TimeEntry\TimeEntryRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Services\TimeEntry\Interfaces\TimeEntryServiceInterface;
-use Carbon\CarbonInterface;
+use Illuminate\Support\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -33,8 +33,8 @@ readonly class TimeEntryService implements TimeEntryServiceInterface
      */
     public function listTimeEntries(
         int $userId,
-        CarbonInterface $startDate,
-        CarbonInterface $endDate,
+        Carbon $startDate,
+        Carbon $endDate,
         array $requestData = []
     ): LengthAwarePaginator {
         return $this->repository->findByUserAndDateRange($userId, $startDate, $endDate, $requestData);

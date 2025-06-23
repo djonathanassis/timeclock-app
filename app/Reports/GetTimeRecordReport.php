@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Reports;
 
 use App\Repositories\TimeEntry\TimeEntryRepositoryInterface;
-use Carbon\CarbonInterface;
+use Illuminate\Support\Carbon;
 
 readonly class GetTimeRecordReport
 {
@@ -15,8 +15,8 @@ readonly class GetTimeRecordReport
     }
 
     public function execute(
-        ?CarbonInterface $startDateTime = null,
-        ?CarbonInterface $endDateTime = null
+        ?Carbon $startDateTime = null,
+        ?Carbon $endDateTime = null
     ): array {
         return $this->repository->getTimeRecordReport($startDateTime, $endDateTime);
     }

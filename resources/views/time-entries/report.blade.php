@@ -49,11 +49,11 @@
                         <p class="text-sm text-blue-700">
                             Este relatório exibe todos os registros de ponto com informações completas dos funcionários.
                             @if($startDate && $endDate)
-                                Período: <strong>{{ \Carbon\Carbon::parse($startDate)->format('d/m/Y') }}</strong> a <strong>{{ \Carbon\Carbon::parse($endDate)->format('d/m/Y') }}</strong>.
+                                Período: <strong>{{ \Illuminate\Support\Carbon::parse($startDate)->format('d/m/Y') }}</strong> a <strong>{{ \Illuminate\Support\Carbon::parse($endDate)->format('d/m/Y') }}</strong>.
                             @elseif($startDate)
-                                A partir de <strong>{{ \Carbon\Carbon::parse($startDate)->format('d/m/Y') }}</strong>.
+                                A partir de <strong>{{ \Illuminate\Support\Carbon::parse($startDate)->format('d/m/Y') }}</strong>.
                             @elseif($endDate)
-                                Até <strong>{{ \Carbon\Carbon::parse($endDate)->format('d/m/Y') }}</strong>.
+                                Até <strong>{{ \Illuminate\Support\Carbon::parse($endDate)->format('d/m/Y') }}</strong>.
                             @else
                                 Todos os períodos.
                             @endif
@@ -92,7 +92,7 @@
                                             <div class="text-sm text-gray-500">{{ $entry->manager_name ?? 'N/A' }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($entry->recorded_at)->format('d/m/Y H:i:s') }}</div>
+                                            <div class="text-sm text-gray-900">{{ \Illuminate\Support\Carbon::parse($entry->recorded_at)->format('d/m/Y H:i:s') }}</div>
                                         </td>
                                     </tr>
                                 @empty

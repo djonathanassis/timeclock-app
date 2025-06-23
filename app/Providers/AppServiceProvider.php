@@ -20,7 +20,7 @@ use App\Services\TimeEntry\Interfaces\TimeEntryServiceInterface;
 use App\Services\TimeEntry\TimeEntryService;
 use App\Services\User\Interfaces\UserServiceInterface;
 use App\Services\User\UserService;
-use Carbon\CarbonImmutable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -61,6 +61,6 @@ class AppServiceProvider extends ServiceProvider
      */
     private function configureDates(): void
     {
-        Date::use(CarbonImmutable::class);
+        Date::use(Carbon::class);
     }
 }

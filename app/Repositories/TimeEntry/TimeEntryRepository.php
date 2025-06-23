@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Repositories\TimeEntry;
 
 use App\Models\TimeEntry;
-use Carbon\CarbonInterface;
+use Illuminate\Support\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -15,15 +15,22 @@ class TimeEntryRepository implements TimeEntryRepositoryInterface
      * @inheritdoc
      */
     public function getTimeRecordReport(
-        ?CarbonInterface $startDateTime = null,
-        ?CarbonInterface $endDateTime = null
+        ?Carbon $startDateTime = null,
+        ?Carbon $endDateTime = null
     ): array {
+        $isSqlite = DB::connection()->getDriverName() === 'sqlite';
+        
+        // SQLite e MySQL têm funções diferentes para cálculo de idade
+        $ageCalculation = $isSqlite
+            ? "strftime('%Y', 'now') - strftime('%Y', u.birth_date) - (strftime('%m-%d', 'now') < strftime('%m-%d', u.birth_date))"
+            : "TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE())";
+        
         $query = "
             SELECT 
                 te.id,
                 u.name AS employee_name,
                 u.job_position,
-                TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE()) AS age,
+                {$ageCalculation} AS age,
                 m.name AS manager_name,
                 te.recorded_at
             FROM time_entries te
@@ -37,10 +44,10 @@ class TimeEntryRepository implements TimeEntryRepositoryInterface
             $query .= " WHERE date(te.recorded_at) BETWEEN date(?) AND date(?)";
             $params[] = $startDateTime->format('Y-m-d H:i:s');
             $params[] = $endDateTime->format('Y-m-d H:i:s');
-        } elseif ($startDateTime instanceof CarbonInterface) {
+        } elseif ($startDateTime instanceof Carbon) {
             $query .= " WHERE date(te.recorded_at) >= date(?)";
             $params[] = $startDateTime->format('Y-m-d H:i:s');
-        } elseif ($endDateTime instanceof CarbonInterface) {
+        } elseif ($endDateTime instanceof Carbon) {
             $query .= " WHERE date(te.recorded_at) <= date(?)";
             $params[] = $endDateTime->format('Y-m-d H:i:s');
         }
@@ -55,13 +62,13 @@ class TimeEntryRepository implements TimeEntryRepositoryInterface
      */
     public function findByUserAndDateRange(
         int $userId,
-        CarbonInterface $startDate,
-        CarbonInterface $endDate,
+        Carbon $startDate,
+        Carbon $endDate,
         array $requestData = []
     ): LengthAwarePaginator {
         return TimeEntry::query()
             ->with('user')
-            ->InDateRange(
+            ->inDateRange(
                 $startDate->startOfDay(),
                 $endDate->endOfDay(),
             )

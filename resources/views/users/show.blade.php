@@ -48,11 +48,11 @@
                                 </div>
                                 <div>
                                     <p class="text-sm font-medium text-gray-500">Data de Nascimento</p>
-                                    <p class="mt-1 text-base text-gray-900">{{ \Carbon\Carbon::parse($employee->birth_date)->format('d/m/Y') }}</p>
+                                    <p class="mt-1 text-base text-gray-900">{{ \Illuminate\Support\Carbon::parse($employee->birth_date)->format('d/m/Y') }}</p>
                                 </div>
                                 <div>
                                     <p class="text-sm font-medium text-gray-500">Idade</p>
-                                    <p class="mt-1 text-base text-gray-900">{{ \Carbon\Carbon::parse($employee->birth_date)->age }} anos</p>
+                                    <p class="mt-1 text-base text-gray-900">{{ \Illuminate\Support\Carbon::parse($employee->birth_date)->age }} anos</p>
                                 </div>
                             </div>
                         </div>

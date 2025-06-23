@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\Http\Requests;
 
 use App\Models\TimeEntry;
-use Carbon\CarbonInterface;
 use Exception;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
@@ -30,7 +29,7 @@ class TimeEntryReportRequest extends FormRequest
     /**
      * @throws Exception
      */
-    public function getStartDateTime(): ?CarbonInterface
+    public function getStartDateTime(): ?Carbon
     {
         if ($this->filled('start_date')) {
             return Carbon::parse($this->start_date)->startOfDay();
@@ -43,7 +42,7 @@ class TimeEntryReportRequest extends FormRequest
      * @return Carbon|null
      * @throws Exception
      */
-    public function getEndDateTime(): ?CarbonInterface
+    public function getEndDateTime(): ?Carbon
     {
         if ($this->filled('end_date')) {
             return Carbon::parse($this->end_date)->endOfDay();

@@ -8,22 +8,22 @@ use App\Exceptions\MaxDailyEntriesException;
 use App\Exceptions\TimeEntryIntervalException;
 use App\Exceptions\TimeEntryRegistrationException;
 use App\Models\TimeEntry;
-use Carbon\CarbonInterface;
+use Illuminate\Support\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface TimeEntryServiceInterface
 {
     /**
      * @param int $userId
-     * @param CarbonInterface $startDate
-     * @param CarbonInterface $endDate
+     * @param Carbon $startDate
+     * @param Carbon $endDate
      * @param array $requestData
      * @return LengthAwarePaginator
      */
     public function listTimeEntries(
         int $userId,
-        CarbonInterface $startDate,
-        CarbonInterface $endDate,
+        Carbon $startDate,
+        Carbon $endDate,
         array $requestData = []
     ): LengthAwarePaginator;
 
