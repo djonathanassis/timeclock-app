@@ -16,39 +16,31 @@ class UserManagementTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
-        // Configura o ViaCepService para modo offline durante os testes
+
         config(['address.offline_mode' => true]);
     }
 
-    /**
-     * Gera um CPF válido para testes
-     */
     private function generateValidCPF(): string
     {
-        // Gera os 9 primeiros dígitos
         $cpf = [];
         for ($i = 0; $i < 9; $i++) {
             $cpf[$i] = random_int(0, 9);
         }
-        
-        // Calcula o primeiro dígito verificador
+
         $soma = 0;
         for ($i = 0; $i < 9; $i++) {
             $soma += $cpf[$i] * (10 - $i);
         }
         $resto = $soma % 11;
         $cpf[9] = ($resto < 2) ? 0 : 11 - $resto;
-        
-        // Calcula o segundo dígito verificador
+
         $soma = 0;
         for ($i = 0; $i < 10; $i++) {
             $soma += $cpf[$i] * (11 - $i);
         }
         $resto = $soma % 11;
         $cpf[10] = ($resto < 2) ? 0 : 11 - $resto;
-        
-        // Formata o CPF como string
+
         return implode('', $cpf);
     }
 
@@ -79,9 +71,8 @@ class UserManagementTest extends TestCase
         $response = $this->actingAs($admin)->get(route('users.create'));
         $response->assertStatus(200);
 
-        // Usar dados válidos em vez de mocks
         $validCpf = $this->generateValidCPF();
-        $validZipCode = '01001000'; // CEP real e válido (Sé, São Paulo)
+        $validZipCode = '01001000';
 
         $userData = [
             'name' => 'Novo Funcionário',
@@ -117,10 +108,9 @@ class UserManagementTest extends TestCase
         $admin = User::factory()->create([
             'role' => UserRole::ADMIN,
         ]);
-        
-        // Criar um usuário com CPF válido para editar
+
         $validCpf = $this->generateValidCPF();
-        $validZipCode = '01001000'; // CEP real e válido (Sé, São Paulo)
+        $validZipCode = '01001000';
         
         $employee = User::factory()->create([
             'role' => UserRole::EMPLOYEE,
@@ -139,12 +129,12 @@ class UserManagementTest extends TestCase
 
         $updateData = [
             'name' => 'Nome Atualizado',
-            'cpf' => $validCpf, // Mantém o mesmo CPF válido
+            'cpf' => $validCpf,
             'email' => $employee->email,
             'job_position' => $employee->job_position,
             'role' => 'employee',
             'birth_date' => $employee->birth_date->format('Y-m-d'),
-            'zip_code' => $validZipCode, // Mantém o mesmo CEP válido
+            'zip_code' => $validZipCode,
             'street' => 'Praça da Sé',
             'number' => $employee->number ?? '100',
             'complement' => $employee->complement ?? 'Sala 202',

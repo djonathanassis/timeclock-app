@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class TimeEntryTest extends TestCase
+final class TimeEntryTest extends TestCase
 {
     use RefreshDatabase;
 

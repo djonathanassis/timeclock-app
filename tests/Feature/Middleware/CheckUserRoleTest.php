@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class CheckUserRoleTest extends TestCase
+final class CheckUserRoleTest extends TestCase
 {
     use RefreshDatabase;
 
